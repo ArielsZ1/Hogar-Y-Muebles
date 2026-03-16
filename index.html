@@ -1,1127 +1,1439 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ML 1v1 Ruleta Caótica</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --gold: #f0c040;
-    --gold-dim: #a07820;
-    --blue: #00d4ff;
-    --blue-dim: #005566;
-    --red: #ff3c5a;
-    --purple: #b060ff;
-    --bg: #07090f;
-    --panel: #0d1120;
-    --panel2: #111828;
-    --border: #1e2d4a;
-    --text: #ccd6f6;
-    --glow-gold: 0 0 10px #f0c040aa, 0 0 30px #f0c04055;
-    --glow-blue: 0 0 10px #00d4ffaa, 0 0 30px #00d4ff55;
-    --glow-red: 0 0 10px #ff3c5aaa, 0 0 30px #ff3c5a55;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Rajdhani', sans-serif;
-    min-height: 100vh;
-    overflow-x: hidden;
-    background-image:
-      radial-gradient(ellipse at 20% 0%, #0d2040 0%, transparent 50%),
-      radial-gradient(ellipse at 80% 100%, #1a0830 0%, transparent 50%);
-  }
-
-  /* Animated grid background */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
-    background-size: 50px 50px;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .container {
-    position: relative;
-    z-index: 1;
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 20px 16px 60px;
-  }
-
-  /* ── HEADER ── */
-  header {
-    text-align: center;
-    padding: 30px 0 10px;
-    position: relative;
-  }
-
-  header::after {
-    content: '';
-    display: block;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--gold), var(--blue), transparent);
-    margin-top: 20px;
-  }
-
-  .logo-badge {
-    display: inline-block;
-    background: linear-gradient(135deg, #f0c040, #ff8c00);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    font-family: 'Orbitron', sans-serif;
-    font-size: clamp(11px, 2vw, 13px);
-    font-weight: 700;
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    margin-bottom: 8px;
-  }
-
-  h1 {
-    font-family: 'Orbitron', sans-serif;
-    font-size: clamp(28px, 6vw, 62px);
-    font-weight: 900;
-    line-height: 1;
-    text-transform: uppercase;
-    background: linear-gradient(180deg, #ffffff 0%, #00d4ff 60%, #0066aa 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    filter: drop-shadow(0 0 20px #00d4ff66);
-    margin-bottom: 6px;
-  }
-
-  .subtitle {
-    font-size: 16px;
-    color: #6080a0;
-    letter-spacing: 2px;
-    font-weight: 600;
-  }
-
-  /* ── SPIN BUTTON ── */
-  .spin-center {
-    display: flex;
-    justify-content: center;
-    margin: 30px 0 24px;
-  }
-
-  .btn-spin {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 18px;
-    font-weight: 700;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    padding: 18px 56px;
-    border: none;
-    cursor: pointer;
-    position: relative;
-    background: linear-gradient(135deg, #f0c040, #e07000, #f0c040);
-    background-size: 200% 200%;
-    color: #07090f;
-    clip-path: polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%);
-    transition: transform 0.15s, filter 0.15s;
-    animation: shimmer 3s linear infinite;
-  }
-
-  .btn-spin:hover {
-    filter: brightness(1.2) drop-shadow(0 0 16px #f0c040cc);
-    transform: scale(1.04);
-  }
-
-  .btn-spin:active { transform: scale(0.97); }
-
-  .btn-spin:disabled {
-    background: #2a3040;
-    color: #405060;
-    cursor: not-allowed;
-    filter: none;
-    animation: none;
-  }
-
-  @keyframes shimmer {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-  }
-
-  /* ── HERO SLOTS ── */
-  .heroes-row {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    gap: 16px;
-    align-items: start;
-    margin-bottom: 24px;
-  }
-
-  .vs-divider {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding-top: 60px;
-  }
-
-  .vs-text {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 36px;
-    font-weight: 900;
-    color: var(--red);
-    text-shadow: var(--glow-red);
-    animation: pulse-vs 2s ease-in-out infinite;
-  }
-
-  @keyframes pulse-vs {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.7; transform: scale(0.92); }
-  }
-
-  .player-card {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .player-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-  }
-
-  .player-card.p1::before { background: linear-gradient(90deg, var(--blue), transparent); }
-  .player-card.p2::before { background: linear-gradient(90deg, transparent, var(--red)); }
-
-  .player-label {
-    padding: 14px 20px 10px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .player-num {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    padding: 4px 10px;
-    clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
-  }
-
-  .p1 .player-num { background: var(--blue); color: #000; }
-  .p2 .player-num { background: var(--red); color: #fff; }
-
-  .player-name-input {
-    background: transparent;
-    border: none;
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--text);
-    outline: none;
-    width: 100%;
-    letter-spacing: 1px;
-  }
-
-  /* Hero slot machine */
-  .slot-wrapper {
-    padding: 16px 20px;
-    height: 130px;
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .slot-tape {
-    position: absolute;
-    left: 0; right: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    transition: none;
-  }
-
-  .slot-item {
-    height: 130px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    padding: 10px;
-    gap: 6px;
-    flex-shrink: 0;
-  }
-
-  .hero-role-badge {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    padding: 2px 8px;
-    clip-path: polygon(4px 0%, 100% 0%, calc(100% - 4px) 100%, 0% 100%);
-  }
-
-  .hero-name {
-    font-family: 'Orbitron', sans-serif;
-    font-size: clamp(16px, 3vw, 24px);
-    font-weight: 700;
-    text-align: center;
-    line-height: 1.1;
-  }
-
-  .hero-name.p1-name { color: var(--blue); text-shadow: var(--glow-blue); }
-  .hero-name.p2-name { color: var(--red); text-shadow: var(--glow-red); }
-
-  /* Scan lines overlay on slots */
-  .slot-wrapper::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 2px,
-      rgba(0,0,0,0.08) 2px,
-      rgba(0,0,0,0.08) 4px
-    );
-    pointer-events: none;
-    z-index: 2;
-  }
-
-  /* Highlight line */
-  .slot-highlight {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    left: 0; right: 0;
-    height: 2px;
-    z-index: 3;
-    pointer-events: none;
-  }
-
-  .p1 .slot-highlight { background: linear-gradient(90deg, transparent, var(--blue), transparent); }
-  .p2 .slot-highlight { background: linear-gradient(90deg, transparent, var(--red), transparent); }
-
-  .slot-top-fade, .slot-bottom-fade {
-    position: absolute;
-    left: 0; right: 0;
-    height: 40%;
-    z-index: 3;
-    pointer-events: none;
-  }
-
-  .slot-top-fade { top: 0; background: linear-gradient(to bottom, var(--panel), transparent); }
-  .slot-bottom-fade { bottom: 0; background: linear-gradient(to top, var(--panel), transparent); }
-
-  /* ── CHALLENGE SECTION ── */
-  .challenge-section {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    position: relative;
-    overflow: hidden;
-    margin-bottom: 24px;
-  }
-
-  .challenge-section::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--purple), var(--gold), var(--purple));
-  }
-
-  .section-header {
-    padding: 14px 20px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .section-icon {
-    font-size: 20px;
-  }
-
-  .section-title {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 3px;
-    color: var(--gold);
-    text-transform: uppercase;
-  }
-
-  .challenge-slot-wrapper {
-    height: 100px;
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .challenge-tape {
-    position: absolute;
-    left: 0; right: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    transition: none;
-  }
-
-  .challenge-item {
-    height: 100px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 16px 24px;
-    text-align: center;
-    flex-shrink: 0;
-    width: 100%;
-  }
-
-  .challenge-text {
-    font-family: 'Orbitron', sans-serif;
-    font-size: clamp(12px, 2.5vw, 18px);
-    font-weight: 700;
-    color: var(--gold);
-    text-shadow: var(--glow-gold);
-    line-height: 1.4;
-  }
-
-  .challenge-slot-wrapper::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: repeating-linear-gradient(
-      0deg, transparent, transparent 2px,
-      rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px
-    );
-    pointer-events: none;
-    z-index: 2;
-  }
-
-  .ch-top-fade, .ch-bottom-fade {
-    position: absolute; left: 0; right: 0;
-    height: 35%; z-index: 3; pointer-events: none;
-  }
-
-  .ch-top-fade { top: 0; background: linear-gradient(to bottom, var(--panel), transparent); }
-  .ch-bottom-fade { bottom: 0; background: linear-gradient(to top, var(--panel), transparent); }
-
-  .ch-highlight {
-    position: absolute; top: 50%; transform: translateY(-50%);
-    left: 0; right: 0; height: 2px; z-index: 3; pointer-events: none;
-    background: linear-gradient(90deg, transparent, var(--gold), transparent);
-  }
-
-  /* ── RESULT CARD ── */
-  .result-card {
-    background: var(--panel2);
-    border: 1px solid var(--border);
-    padding: 20px 24px;
-    display: none;
-    position: relative;
-    overflow: hidden;
-    animation: fadeIn 0.5s ease;
-  }
-
-  .result-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--blue), var(--purple), var(--gold), var(--red));
-    animation: rainbow-slide 2s linear infinite;
-    background-size: 200% 100%;
-  }
-
-  @keyframes rainbow-slide {
-    0% { background-position: 0% 0%; }
-    100% { background-position: 200% 0%; }
-  }
-
-  .result-card.visible { display: block; }
-
-  .result-title {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 11px;
-    letter-spacing: 4px;
-    color: #506080;
-    text-transform: uppercase;
-    margin-bottom: 14px;
-  }
-
-  .result-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 14px;
-  }
-
-  .result-hero {
-    padding: 14px;
-    border: 1px solid var(--border);
-    position: relative;
-  }
-
-  .result-hero.rh1 { border-left: 3px solid var(--blue); }
-  .result-hero.rh2 { border-left: 3px solid var(--red); }
-
-  .rh-player { font-size: 11px; letter-spacing: 2px; color: #506080; font-weight: 700; margin-bottom: 4px; }
-  .rh-hero { font-family: 'Orbitron', sans-serif; font-size: 18px; font-weight: 700; }
-  .rh1 .rh-hero { color: var(--blue); }
-  .rh2 .rh-hero { color: var(--red); }
-  .rh-role { font-size: 11px; color: #506080; margin-top: 4px; }
-
-  .result-challenge {
-    padding: 14px;
-    border: 1px solid #2a1f00;
-    background: #0f0c00;
-    border-left: 3px solid var(--gold);
-  }
-
-  .rc-label { font-size: 11px; letter-spacing: 2px; color: #806030; font-weight: 700; margin-bottom: 6px; }
-  .rc-text { font-family: 'Orbitron', sans-serif; font-size: 15px; font-weight: 700; color: var(--gold); line-height: 1.4; }
-
-  /* ── HISTORY ── */
-  .history-section {
-    margin-top: 24px;
-    display: none;
-  }
-
-  .history-section.visible { display: block; }
-
-  .history-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 12px;
-  }
-
-  .history-title {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 11px;
-    letter-spacing: 3px;
-    color: #506080;
-    text-transform: uppercase;
-  }
-
-  .btn-clear {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 12px;
-    letter-spacing: 2px;
-    font-weight: 700;
-    background: transparent;
-    border: 1px solid #2a3040;
-    color: #506080;
-    padding: 4px 12px;
-    cursor: pointer;
-    transition: all 0.2s;
-    text-transform: uppercase;
-  }
-
-  .btn-clear:hover { border-color: var(--red); color: var(--red); }
-
-  .history-list {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    max-height: 240px;
-    overflow-y: auto;
-  }
-
-  .history-list::-webkit-scrollbar { width: 4px; }
-  .history-list::-webkit-scrollbar-track { background: transparent; }
-  .history-list::-webkit-scrollbar-thumb { background: var(--border); }
-
-  .history-item {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    padding: 10px 14px;
-    display: grid;
-    grid-template-columns: auto 1fr 1fr 2fr;
-    gap: 10px;
-    align-items: center;
-    font-size: 13px;
-    opacity: 0;
-    animation: fadeIn 0.3s ease forwards;
-  }
-
-  .hi-round { font-family: 'Orbitron', sans-serif; font-size: 10px; color: #405060; font-weight: 700; }
-  .hi-p1 { color: var(--blue); font-weight: 700; }
-  .hi-p2 { color: var(--red); font-weight: 700; }
-  .hi-ch { color: var(--gold-dim); font-size: 12px; }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  /* ── ROLE COLORS ── */
-  .role-Tank { background: #0d2a3a; color: #40a0c0; }
-  .role-Combatiente { background: #2a0d0d; color: #c04040; }
-  .role-Asesino { background: #1a0d2a; color: #8040c0; }
-  .role-Mago { background: #0d1a2a; color: #4080c0; }
-  .role-Tirador { background: #2a1f0d; color: #c08040; }
-  .role-Apoyo { background: #0d2a1a; color: #40c080; }
-
-  /* ── FOOTER ── */
-  footer {
-    text-align: center;
-    padding: 30px 0 0;
-    font-size: 12px;
-    color: #2a3a50;
-    letter-spacing: 2px;
-  }
-
-  /* mobile tweaks */
-  @media (max-width: 600px) {
-    .heroes-row { grid-template-columns: 1fr; }
-    .vs-divider { padding-top: 0; }
-    .result-grid { grid-template-columns: 1fr; }
-    .history-item { grid-template-columns: auto 1fr 1fr; }
-    .hi-ch { display: none; }
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Hogar y Muebles</title>
+
+  <!-- Fonts: Cormorant Garamond (display) + DM Sans (body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+
+  <style>
+    /* ─── CSS Variables ─────────────────────────────────────── */
+    :root {
+      --cream:       #f5f0e8;
+      --warm-white:  #faf8f4;
+      --sand:        #e8ddd0;
+      --caramel:     #c09a6b;
+      --espresso:    #3d2b1f;
+      --bark:        #5c3d2e;
+      --moss:        #7a8c6e;
+      --text:        #2a1f18;
+      --text-muted:  #8a7a70;
+
+      --font-display: 'Cormorant Garamond', Georgia, serif;
+      --font-body:    'DM Sans', sans-serif;
+
+      --transition: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    /* ─── Reset & Base ──────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--warm-white);
+      color: var(--text);
+      font-size: 16px;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    img { display: block; width: 100%; object-fit: cover; }
+    a { text-decoration: none; color: inherit; }
+
+    /* ─── Utilities ─────────────────────────────────────────── */
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+
+    .section-label {
+      font-family: var(--font-body);
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--caramel);
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.2rem, 5vw, 3.5rem);
+      font-weight: 300;
+      line-height: 1.15;
+      color: var(--espresso);
+    }
+
+    /* ─── Placeholder image block ───────────────────────────── */
+    .img-placeholder {
+      width: 100%;
+      background: var(--sand);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border: 1.5px dashed var(--caramel);
+      position: relative;
+    }
+    .img-placeholder::before {
+      content: '📷';
+      font-size: 1.8rem;
+      opacity: 0.55;
+    }
+    .img-placeholder span {
+      text-align: center;
+      padding: 0 1rem;
+      line-height: 1.5;
+    }
+
+    /* ─── Navbar ────────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 1.4rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(250, 248, 244, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(192, 154, 107, 0.2);
+      transition: var(--transition);
+    }
+
+    .nav-logo {
+      font-family: var(--font-display);
+      font-size: 1.55rem;
+      font-weight: 400;
+      color: var(--espresso);
+      letter-spacing: 0.02em;
+    }
+    .nav-logo span { color: var(--caramel); font-style: italic; }
+
+    .nav-links {
+      display: flex;
+      gap: 2.2rem;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 0.8rem;
+      font-weight: 400;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--bark);
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--caramel); }
+
+    .nav-cta {
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.6rem 1.5rem;
+      background: var(--espresso);
+      color: var(--cream);
+      border-radius: 2px;
+      transition: background 0.25s;
+    }
+    .nav-cta:hover { background: var(--bark); }
+
+    /* Mobile hamburger */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 4px;
+    }
+    .hamburger span {
+      width: 24px; height: 2px;
+      background: var(--espresso);
+      transition: var(--transition);
+    }
+
+    /* ─── Hero ──────────────────────────────────────────────── */
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      padding-top: 80px;
+    }
+
+    .hero-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 5rem 4rem 5rem 5rem;
+      background: var(--cream);
+    }
+
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 1.8rem;
+    }
+    .hero-tag::before {
+      content: '';
+      width: 36px; height: 1px;
+      background: var(--caramel);
+    }
+
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(3rem, 6vw, 5rem);
+      font-weight: 300;
+      line-height: 1.05;
+      color: var(--espresso);
+      margin-bottom: 1.5rem;
+    }
+    .hero-title em {
+      font-style: italic;
+      color: var(--caramel);
+    }
+
+    .hero-desc {
+      font-size: 1rem;
+      color: var(--text-muted);
+      max-width: 400px;
+      margin-bottom: 2.5rem;
+      line-height: 1.8;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .btn-primary {
+      padding: 0.9rem 2.2rem;
+      background: var(--espresso);
+      color: var(--cream);
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border: none;
+      cursor: pointer;
+      transition: background 0.25s;
+      border-radius: 2px;
+    }
+    .btn-primary:hover { background: var(--bark); }
+
+    .btn-outline {
+      padding: 0.9rem 2.2rem;
+      background: transparent;
+      color: var(--espresso);
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border: 1.5px solid var(--espresso);
+      cursor: pointer;
+      transition: all 0.25s;
+      border-radius: 2px;
+    }
+    .btn-outline:hover { background: var(--espresso); color: var(--cream); }
+
+    .hero-image {
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-image .img-placeholder { height: 100%; min-height: 550px; border: none; }
+
+    .hero-badge {
+      position: absolute;
+      bottom: 2rem; left: 2rem;
+      background: var(--warm-white);
+      padding: 1.2rem 1.5rem;
+      border-left: 3px solid var(--caramel);
+      z-index: 2;
+    }
+    .hero-badge strong {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      font-weight: 600;
+      color: var(--espresso);
+    }
+    .hero-badge span {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    /* ─── Strip / Stats ─────────────────────────────────────── */
+    .stats-strip {
+      background: var(--espresso);
+      padding: 2rem 0;
+    }
+    .stats-inner {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+    }
+    .stat-item {
+      text-align: center;
+    }
+    .stat-item strong {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 2.4rem;
+      font-weight: 300;
+      color: var(--caramel);
+    }
+    .stat-item span {
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--sand);
+      opacity: 0.75;
+    }
+
+    /* ─── Categories ────────────────────────────────────────── */
+    .categories {
+      padding: 6rem 0;
+      background: var(--warm-white);
+    }
+    .categories-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 3rem;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+    .categories-header .section-title { max-width: 450px; }
+    .view-all {
+      font-size: 0.78rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--caramel);
+      border-bottom: 1px solid var(--caramel);
+      padding-bottom: 2px;
+      white-space: nowrap;
+      transition: opacity 0.2s;
+    }
+    .view-all:hover { opacity: 0.7; }
+
+    .categories-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      grid-template-rows: auto auto;
+      gap: 1rem;
+    }
+
+    .cat-card {
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      border-radius: 3px;
+    }
+    .cat-card .img-placeholder { min-height: 260px; border: none; }
+    .cat-card:first-child .img-placeholder { min-height: 540px; }
+
+    .cat-label {
+      position: absolute;
+      bottom: 1.5rem; left: 1.5rem;
+      background: rgba(250, 248, 244, 0.93);
+      padding: 0.6rem 1rem;
+      backdrop-filter: blur(4px);
+    }
+    .cat-label h3 {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 400;
+      color: var(--espresso);
+    }
+    .cat-label span {
+      font-size: 0.72rem;
+      color: var(--caramel);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .cat-card:first-child { grid-row: 1 / 3; }
+    .cat-card:nth-child(2) { grid-column: 2; grid-row: 1; }
+    .cat-card:nth-child(3) { grid-column: 3; grid-row: 1; }
+    .cat-card:nth-child(4) { grid-column: 2; grid-row: 2; }
+    .cat-card:nth-child(5) { grid-column: 3; grid-row: 2; }
+
+    /* ─── Featured Products ─────────────────────────────────── */
+    .products {
+      padding: 6rem 0;
+      background: var(--cream);
+    }
+    .products-header {
+      text-align: center;
+      margin-bottom: 3.5rem;
+    }
+    .products-header .section-label { margin-bottom: 0.8rem; display: block; }
+    .products-header .section-title { margin-bottom: 1rem; }
+    .products-header p {
+      color: var(--text-muted);
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+    }
+
+    .product-card {
+      background: var(--warm-white);
+      border-radius: 3px;
+      overflow: hidden;
+      transition: transform var(--transition), box-shadow var(--transition);
+    }
+    .product-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 50px rgba(61, 43, 31, 0.12);
+    }
+
+    .product-img { position: relative; }
+    .product-img .img-placeholder { min-height: 260px; border: none; }
+
+    .product-badge-new {
+      position: absolute;
+      top: 1rem; left: 1rem;
+      background: var(--moss);
+      color: white;
+      font-size: 0.65rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.7rem;
+      border-radius: 2px;
+    }
+
+    .product-info {
+      padding: 1.2rem 1.3rem 1.5rem;
+    }
+    .product-info .cat {
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--caramel);
+      display: block;
+      margin-bottom: 0.3rem;
+    }
+    .product-info h3 {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 400;
+      color: var(--espresso);
+      margin-bottom: 0.6rem;
+    }
+    .product-info p {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+      line-height: 1.6;
+    }
+    .product-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .product-price {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--espresso);
+    }
+    /* ── PLACEHOLDER PRICE: reemplazar con precio real ── */
+    .product-price.placeholder-price {
+      color: var(--text-muted);
+      font-style: italic;
+      font-size: 0.88rem;
+      font-family: var(--font-body);
+      font-weight: 300;
+    }
+    .btn-buy {
+      width: 36px; height: 36px;
+      background: var(--espresso);
+      color: var(--cream);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+      border-radius: 2px;
+      transition: background 0.2s;
+      cursor: pointer;
+      border: none;
+    }
+    .btn-buy:hover { background: var(--caramel); }
+
+    /* ─── About / Historia ──────────────────────────────────── */
+    .about {
+      padding: 7rem 0;
+      background: var(--warm-white);
+    }
+    .about-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+    }
+    .about-images {
+      position: relative;
+      height: 520px;
+    }
+    .about-img-main .img-placeholder {
+      height: 420px;
+      border-radius: 3px;
+      border: none;
+    }
+    .about-img-accent {
+      position: absolute;
+      bottom: 0; right: -20px;
+      width: 55%;
+      border: 5px solid var(--warm-white);
+      border-radius: 3px;
+      overflow: hidden;
+      box-shadow: 0 12px 40px rgba(61,43,31,0.15);
+    }
+    .about-img-accent .img-placeholder {
+      height: 200px;
+      border: none;
+    }
+    .about-content {}
+    .about-content .section-label { margin-bottom: 1rem; display: block; }
+    .about-content .section-title { margin-bottom: 1.5rem; }
+    .about-content p {
+      color: var(--text-muted);
+      margin-bottom: 1.2rem;
+      font-size: 0.97rem;
+    }
+    .about-values {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    .value-item {
+      padding: 1.2rem;
+      background: var(--cream);
+      border-radius: 3px;
+      border-left: 3px solid var(--caramel);
+    }
+    .value-item strong {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 1rem;
+      color: var(--espresso);
+      margin-bottom: 0.3rem;
+    }
+    .value-item span {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* ─── Testimonial Strip ─────────────────────────────────── */
+    .testimonials {
+      background: var(--espresso);
+      padding: 5rem 0;
+    }
+    .testimonials-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    .testimonials-header .section-label { color: var(--caramel); margin-bottom: 0.8rem; display: block; }
+    .testimonials-header .section-title { color: var(--cream); }
+
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+    .testimonial-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(192,154,107,0.2);
+      padding: 2rem;
+      border-radius: 3px;
+    }
+    .stars { color: var(--caramel); margin-bottom: 1rem; font-size: 1.1rem; letter-spacing: 0.1em; }
+    .testimonial-card p {
+      color: rgba(245,240,232,0.8);
+      font-style: italic;
+      font-size: 0.92rem;
+      line-height: 1.75;
+      margin-bottom: 1.2rem;
+    }
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    .author-avatar .img-placeholder {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      border: 1px dashed var(--caramel);
+      font-size: 0.5rem;
+      min-height: unset;
+    }
+    .author-avatar .img-placeholder::before { display: none; }
+    .author-info strong {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--cream);
+    }
+    .author-info span {
+      font-size: 0.72rem;
+      color: var(--caramel);
+      letter-spacing: 0.08em;
+    }
+
+    /* ─── Contact ───────────────────────────────────────────── */
+    .contact {
+      padding: 6rem 0;
+      background: var(--cream);
+    }
+    .contact-inner {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 4rem;
+      align-items: start;
+    }
+    .contact-info .section-label { margin-bottom: 1rem; display: block; }
+    .contact-info .section-title { margin-bottom: 1.2rem; }
+    .contact-info > p {
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+    }
+
+    .contact-details { display: flex; flex-direction: column; gap: 1.2rem; }
+    .contact-item {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+    .contact-icon {
+      width: 42px; height: 42px;
+      background: var(--espresso);
+      border-radius: 3px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+    .contact-text strong {
+      display: block;
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--caramel);
+      margin-bottom: 0.2rem;
+    }
+    /* ── PLACEHOLDER CONTACT: reemplazar con datos reales ── */
+    .contact-text span {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+    .contact-text span.real {
+      font-style: normal;
+      color: var(--text);
+    }
+
+    .social-links {
+      display: flex;
+      gap: 0.8rem;
+      margin-top: 2rem;
+    }
+    .social-btn {
+      width: 40px; height: 40px;
+      border: 1.5px solid var(--caramel);
+      border-radius: 3px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+      color: var(--caramel);
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    .social-btn:hover { background: var(--caramel); color: white; }
+
+    /* Contact Form */
+    .contact-form { display: flex; flex-direction: column; gap: 1.1rem; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+    .form-group label {
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--bark);
+    }
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      padding: 0.8rem 1rem;
+      background: var(--warm-white);
+      border: 1.5px solid var(--sand);
+      border-radius: 2px;
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      border-color: var(--caramel);
+    }
+    .form-group textarea { resize: vertical; min-height: 110px; }
+    .form-submit {
+      padding: 1rem 2.5rem;
+      background: var(--espresso);
+      color: var(--cream);
+      border: none;
+      border-radius: 2px;
+      font-family: var(--font-body);
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.25s;
+      align-self: flex-start;
+    }
+    .form-submit:hover { background: var(--bark); }
+
+    /* ─── Map placeholder ───────────────────────────────────── */
+    .map-section {
+      height: 380px;
+      background: var(--sand);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 0.6rem;
+      color: var(--text-muted);
+      border-top: 1px solid rgba(192,154,107,0.2);
+      position: relative;
+      overflow: hidden;
+    }
+    .map-section::before {
+      content: '📍';
+      font-size: 2.5rem;
+    }
+    .map-section p {
+      font-size: 0.8rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+    .map-section small {
+      font-size: 0.72rem;
+      color: var(--caramel);
+    }
+
+    /* ─── Footer ────────────────────────────────────────────── */
+    footer {
+      background: var(--espresso);
+      padding: 4rem 0 2rem;
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 3rem;
+      margin-bottom: 3rem;
+    }
+    .footer-brand {}
+    .footer-logo {
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      font-weight: 400;
+      color: var(--cream);
+      margin-bottom: 1rem;
+    }
+    .footer-logo span { color: var(--caramel); font-style: italic; }
+    .footer-brand p {
+      color: rgba(245,240,232,0.55);
+      font-size: 0.88rem;
+      line-height: 1.75;
+    }
+    .footer-col h4 {
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--caramel);
+      margin-bottom: 1.2rem;
+    }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.7rem; }
+    .footer-col ul a {
+      font-size: 0.85rem;
+      color: rgba(245,240,232,0.6);
+      transition: color 0.2s;
+    }
+    .footer-col ul a:hover { color: var(--caramel); }
+
+    .footer-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .footer-bottom p {
+      font-size: 0.78rem;
+      color: rgba(245,240,232,0.4);
+    }
+
+    /* ─── Scroll animations ─────────────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+
+    /* ─── Responsive ────────────────────────────────────────── */
+    @media (max-width: 1024px) {
+      .products-grid { grid-template-columns: repeat(2, 1fr); }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 768px) {
+      .nav-links, .nav-cta { display: none; }
+      .hamburger { display: flex; }
+
+      .hero { grid-template-columns: 1fr; }
+      .hero-content { padding: 3rem 2rem; }
+      .hero-image { display: none; }
+
+      .categories-grid {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: unset;
+      }
+      .cat-card:first-child { grid-column: 1 / 3; grid-row: 1; }
+      .cat-card:nth-child(n) { grid-column: unset; grid-row: unset; }
+
+      .about-inner { grid-template-columns: 1fr; }
+      .about-images { height: 350px; }
+
+      .contact-inner { grid-template-columns: 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+
+      .testimonials-grid { grid-template-columns: 1fr; }
+
+      .footer-grid { grid-template-columns: 1fr; gap: 2rem; }
+    }
+  </style>
 </head>
 <body>
-<div class="container">
 
-  <!-- HEADER -->
-  <header>
-    <div class="logo-badge">Mobile Legends Bang Bang</div>
-    <h1>1v1 Ruleta Caótica</h1>
-    <p class="subtitle">Suerte al máximo · Sin excusas · Puro caos</p>
-  </header>
+  <!-- ═══ NAVBAR ═══════════════════════════════════════════════ -->
+  <nav id="navbar">
+    <a href="#" class="nav-logo">Hogar <span>&</span> Muebles</a>
+    <ul class="nav-links">
+      <li><a href="#categorias">Catálogo</a></li>
+      <li><a href="#productos">Productos</a></li>
+      <li><a href="#nosotros">Nosotros</a></li>
+      <li><a href="#contacto">Contacto</a></li>
+    </ul>
+    <a href="#contacto" class="nav-cta">Consultanos</a>
+    <div class="hamburger" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </div>
+  </nav>
 
-  <!-- SPIN BUTTON -->
-  <div class="spin-center">
-    <button class="btn-spin" id="btnSpin" onclick="spinAll()">⚡ GIRAR TODO ⚡</button>
-  </div>
 
-  <!-- HERO SLOTS -->
-  <div class="heroes-row">
-
-    <!-- PLAYER 1 -->
-    <div class="player-card p1">
-      <div class="player-label">
-        <span class="player-num">J1</span>
-        <input class="player-name-input" type="text" value="Jugador 1" id="p1name" maxlength="16" />
+  <!-- ═══ HERO ══════════════════════════════════════════════════ -->
+  <section class="hero" id="inicio">
+    <div class="hero-content">
+      <div class="hero-tag">
+        <span class="section-label">Bienvenidos a nuestro showroom</span>
       </div>
-      <div class="slot-wrapper">
-        <div class="slot-tape" id="tape1">
-          <div class="slot-item">
-            <div class="hero-role-badge role-Tank">Tank</div>
-            <div class="hero-name p1-name">???</div>
+      <h1 class="hero-title">
+        Tu hogar,<br>
+        <em>tu estilo</em>
+      </h1>
+      <p class="hero-desc">
+        Muebles de calidad diseñados para transformar cada rincón de tu casa. 
+        Encontrá piezas únicas que combinan funcionalidad, durabilidad y estética.
+      </p>
+      <div class="hero-actions">
+        <a href="#productos" class="btn-primary">Ver catálogo</a>
+        <a href="#contacto" class="btn-outline">Contactanos</a>
+      </div>
+    </div>
+
+    <div class="hero-image">
+      <!-- 
+        ════════════════════════════════════════════════
+        📷 FOTO HERO PRINCIPAL
+        Reemplazá este bloque con:
+        <img src="ruta/a/tu-foto.jpg" alt="Foto principal del showroom" style="height:100%;object-fit:cover;">
+        Tamaño recomendado: 800×1000px o superior
+        ════════════════════════════════════════════════
+      -->
+      <div class="img-placeholder" style="height:100%">
+        <span>📷 FOTO PRINCIPAL DEL SHOWROOM<br><small>Reemplazar con imagen — 800×1000px recomendado</small></span>
+      </div>
+      <div class="hero-badge">
+        <strong>+200</strong>
+        <span>Productos disponibles</span>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══ STATS STRIP ═══════════════════════════════════════════ -->
+  <div class="stats-strip">
+    <div class="container">
+      <div class="stats-inner">
+        <div class="stat-item">
+          <strong>+200</strong>
+          <span>Productos</span>
+        </div>
+        <div class="stat-item">
+          <strong>+10</strong>
+          <span>Años de experiencia</span>
+        </div>
+        <div class="stat-item">
+          <strong>+500</strong>
+          <span>Clientes satisfechos</span>
+        </div>
+        <div class="stat-item">
+          <strong>100%</strong>
+          <span>Garantía de calidad</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- 
+    NOTA: Podés cambiar los números arriba por los reales de tu negocio.
+  -->
+
+
+  <!-- ═══ CATEGORÍAS ═════════════════════════════════════════════ -->
+  <section class="categories" id="categorias">
+    <div class="container">
+      <div class="categories-header reveal">
+        <div>
+          <span class="section-label">Lo que ofrecemos</span>
+          <h2 class="section-title">Explorá<br>nuestras categorías</h2>
+        </div>
+        <a href="#" class="view-all">Ver todo el catálogo →</a>
+      </div>
+
+      <div class="categories-grid">
+
+        <!-- Categoría 1 — GRANDE (izquierda) -->
+        <div class="cat-card reveal">
+          <!-- 📷 Reemplazar con <img src="..." alt="Living"> -->
+          <div class="img-placeholder" style="height:540px">
+            <span>📷 FOTO CATEGORÍA LIVING<br><small>Tamaño recomendado: 500×600px</small></span>
+          </div>
+          <div class="cat-label">
+            <span>Categoría destacada</span>
+            <h3>Living & Sala</h3>
           </div>
         </div>
-        <div class="slot-top-fade"></div>
-        <div class="slot-bottom-fade"></div>
-        <div class="slot-highlight"></div>
-      </div>
-    </div>
 
-    <!-- VS -->
-    <div class="vs-divider">
-      <span class="vs-text">VS</span>
-    </div>
-
-    <!-- PLAYER 2 -->
-    <div class="player-card p2">
-      <div class="player-label">
-        <span class="player-num">J2</span>
-        <input class="player-name-input" type="text" value="Jugador 2" id="p2name" maxlength="16" />
-      </div>
-      <div class="slot-wrapper">
-        <div class="slot-tape" id="tape2">
-          <div class="slot-item">
-            <div class="hero-role-badge role-Tank">Tank</div>
-            <div class="hero-name p2-name">???</div>
+        <!-- Categoría 2 -->
+        <div class="cat-card reveal reveal-delay-1">
+          <div class="img-placeholder" style="height:260px">
+            <span>📷 FOTO DORMITORIOS<br><small>350×280px</small></span>
+          </div>
+          <div class="cat-label">
+            <span>Descanso</span>
+            <h3>Dormitorios</h3>
           </div>
         </div>
-        <div class="slot-top-fade"></div>
-        <div class="slot-bottom-fade"></div>
-        <div class="slot-highlight"></div>
-      </div>
-    </div>
 
-  </div>
-
-  <!-- CHALLENGE SLOT -->
-  <div class="challenge-section">
-    <div class="section-header">
-      <span class="section-icon">🎲</span>
-      <span class="section-title">Reto de la Partida</span>
-    </div>
-    <div class="challenge-slot-wrapper">
-      <div class="challenge-tape" id="tapeCh">
-        <div class="challenge-item">
-          <div class="challenge-text">¡GIRA PARA DESCUBRIR TU RETO!</div>
+        <!-- Categoría 3 -->
+        <div class="cat-card reveal reveal-delay-2">
+          <div class="img-placeholder" style="height:260px">
+            <span>📷 FOTO COMEDOR<br><small>350×280px</small></span>
+          </div>
+          <div class="cat-label">
+            <span>Reuniones</span>
+            <h3>Comedor</h3>
+          </div>
         </div>
+
+        <!-- Categoría 4 -->
+        <div class="cat-card reveal reveal-delay-1">
+          <div class="img-placeholder" style="height:260px">
+            <span>📷 FOTO OFICINA<br><small>350×280px</small></span>
+          </div>
+          <div class="cat-label">
+            <span>Productividad</span>
+            <h3>Oficina & Estudio</h3>
+          </div>
+        </div>
+
+        <!-- Categoría 5 -->
+        <div class="cat-card reveal reveal-delay-2">
+          <div class="img-placeholder" style="height:260px">
+            <span>📷 FOTO EXTERIOR<br><small>350×280px</small></span>
+          </div>
+          <div class="cat-label">
+            <span>Al aire libre</span>
+            <h3>Exterior & Jardín</h3>
+          </div>
+        </div>
+
       </div>
-      <div class="ch-top-fade"></div>
-      <div class="ch-bottom-fade"></div>
-      <div class="ch-highlight"></div>
     </div>
+  </section>
+
+
+  <!-- ═══ PRODUCTOS DESTACADOS ══════════════════════════════════ -->
+  <section class="products" id="productos">
+    <div class="container">
+      <div class="products-header reveal">
+        <span class="section-label">Selección especial</span>
+        <h2 class="section-title">Productos destacados</h2>
+        <p>Cada pieza, elegida por su calidad y diseño para hacer de tu hogar un lugar único.</p>
+      </div>
+
+      <div class="products-grid">
+
+        <!-- Producto 1 -->
+        <div class="product-card reveal">
+          <div class="product-img">
+            <!-- 📷 Reemplazar con <img src="..." alt="Nombre del producto"> -->
+            <div class="img-placeholder" style="height:260px">
+              <span>📷 FOTO PRODUCTO 1<br><small>400×300px</small></span>
+            </div>
+            <span class="product-badge-new">Nuevo</span>
+          </div>
+          <div class="product-info">
+            <span class="cat">Living</span>
+            <!-- ✏️ Reemplazar con nombre real -->
+            <h3>Sillón modelo ejemplo</h3>
+            <!-- ✏️ Reemplazar con descripción real -->
+            <p>Breve descripción del producto. Material, dimensiones, color.</p>
+            <div class="product-footer">
+              <!-- ✏️ Reemplazar con precio real o "Consultar precio" -->
+              <span class="product-price placeholder-price">Consultar precio</span>
+              <button class="btn-buy" onclick="window.location='#contacto'" title="Consultar">→</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Producto 2 -->
+        <div class="product-card reveal reveal-delay-1">
+          <div class="product-img">
+            <div class="img-placeholder" style="height:260px">
+              <span>📷 FOTO PRODUCTO 2<br><small>400×300px</small></span>
+            </div>
+          </div>
+          <div class="product-info">
+            <span class="cat">Dormitorio</span>
+            <h3>Cama modelo ejemplo</h3>
+            <p>Breve descripción del producto. Material, dimensiones, color.</p>
+            <div class="product-footer">
+              <span class="product-price placeholder-price">Consultar precio</span>
+              <button class="btn-buy" onclick="window.location='#contacto'" title="Consultar">→</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Producto 3 -->
+        <div class="product-card reveal reveal-delay-2">
+          <div class="product-img">
+            <div class="img-placeholder" style="height:260px">
+              <span>📷 FOTO PRODUCTO 3<br><small>400×300px</small></span>
+            </div>
+          </div>
+          <div class="product-info">
+            <span class="cat">Comedor</span>
+            <h3>Mesa modelo ejemplo</h3>
+            <p>Breve descripción del producto. Material, dimensiones, color.</p>
+            <div class="product-footer">
+              <span class="product-price placeholder-price">Consultar precio</span>
+              <button class="btn-buy" onclick="window.location='#contacto'" title="Consultar">→</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Producto 4 -->
+        <div class="product-card reveal reveal-delay-3">
+          <div class="product-img">
+            <div class="img-placeholder" style="height:260px">
+              <span>📷 FOTO PRODUCTO 4<br><small>400×300px</small></span>
+            </div>
+          </div>
+          <div class="product-info">
+            <span class="cat">Oficina</span>
+            <h3>Escritorio modelo</h3>
+            <p>Breve descripción del producto. Material, dimensiones, color.</p>
+            <div class="product-footer">
+              <span class="product-price placeholder-price">Consultar precio</span>
+              <button class="btn-buy" onclick="window.location='#contacto'" title="Consultar">→</button>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /products-grid -->
+    </div>
+  </section>
+
+
+  <!-- ═══ NOSOTROS ══════════════════════════════════════════════ -->
+  <section class="about" id="nosotros">
+    <div class="container">
+      <div class="about-inner">
+
+        <div class="about-images reveal">
+          <div class="about-img-main">
+            <!-- 📷 Reemplazar con foto del local o equipo -->
+            <div class="img-placeholder" style="height:420px">
+              <span>📷 FOTO DEL LOCAL / EQUIPO<br><small>600×500px recomendado</small></span>
+            </div>
+          </div>
+          <div class="about-img-accent">
+            <!-- 📷 Reemplazar con foto secundaria (detalle de mueble o taller) -->
+            <div class="img-placeholder" style="height:200px">
+              <span>📷 DETALLE / TALLER<br><small>350×250px</small></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="about-content reveal reveal-delay-2">
+          <span class="section-label">Nuestra historia</span>
+          <h2 class="section-title">Pasión por el<br>buen diseño</h2>
+          <!-- ✏️ Reemplazar con texto real de la empresa -->
+          <p>
+            En <strong>Hogar y Muebles</strong> creemos que cada espacio cuenta una historia. 
+            Desde nuestros comienzos, nos dedicamos a ofrecer muebles de calidad que combinan 
+            estética y funcionalidad para hacer de tu hogar un lugar especial.
+          </p>
+          <p>
+            <!-- ✏️ Agregá acá información sobre años de experiencia, origen de la empresa, etc. -->
+            [Agregá aquí la historia de tu empresa: cuándo abrieron, qué los motiva, 
+            qué los diferencia de la competencia, etc.]
+          </p>
+          <div class="about-values">
+            <div class="value-item">
+              <strong>Calidad</strong>
+              <span>Materiales seleccionados y durables</span>
+            </div>
+            <div class="value-item">
+              <strong>Diseño</strong>
+              <span>Estética en cada detalle</span>
+            </div>
+            <div class="value-item">
+              <strong>Servicio</strong>
+              <span>Asesoramiento personalizado</span>
+            </div>
+            <div class="value-item">
+              <strong>Garantía</strong>
+              <span>Respaldo en cada compra</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══ TESTIMONIOS ════════════════════════════════════════════ -->
+  <section class="testimonials">
+    <div class="container">
+      <div class="testimonials-header reveal">
+        <span class="section-label">Lo que dicen nuestros clientes</span>
+        <h2 class="section-title">Opiniones reales</h2>
+      </div>
+      <div class="testimonials-grid">
+
+        <!-- Testimonio 1 — ✏️ Reemplazar con real -->
+        <div class="testimonial-card reveal">
+          <div class="stars">★★★★★</div>
+          <p>"[Testimonio del cliente 1. Podés escribir una reseña real de un comprador satisfecho sobre su experiencia con los muebles o el servicio.]"</p>
+          <div class="testimonial-author">
+            <div class="author-avatar">
+              <div class="img-placeholder" style="width:40px;height:40px;border-radius:50%;min-height:unset;">
+                <span></span>
+              </div>
+            </div>
+            <div class="author-info">
+              <strong>[Nombre del cliente]</strong>
+              <span>[Ciudad · Mes Año]</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Testimonio 2 -->
+        <div class="testimonial-card reveal reveal-delay-1">
+          <div class="stars">★★★★★</div>
+          <p>"[Testimonio del cliente 2. Describí qué mueble compró y por qué lo recomendaría a otras personas.]"</p>
+          <div class="testimonial-author">
+            <div class="author-avatar">
+              <div class="img-placeholder" style="width:40px;height:40px;border-radius:50%;min-height:unset;"><span></span></div>
+            </div>
+            <div class="author-info">
+              <strong>[Nombre del cliente]</strong>
+              <span>[Ciudad · Mes Año]</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Testimonio 3 -->
+        <div class="testimonial-card reveal reveal-delay-2">
+          <div class="stars">★★★★★</div>
+          <p>"[Testimonio del cliente 3. Mencioná el producto, la atención recibida o el proceso de compra/entrega.]"</p>
+          <div class="testimonial-author">
+            <div class="author-avatar">
+              <div class="img-placeholder" style="width:40px;height:40px;border-radius:50%;min-height:unset;"><span></span></div>
+            </div>
+            <div class="author-info">
+              <strong>[Nombre del cliente]</strong>
+              <span>[Ciudad · Mes Año]</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══ CONTACTO ══════════════════════════════════════════════ -->
+  <section class="contact" id="contacto">
+    <div class="container">
+      <div class="contact-inner">
+
+        <div class="contact-info reveal">
+          <span class="section-label">Hablemos</span>
+          <h2 class="section-title">Contactate<br>con nosotros</h2>
+          <p>Estamos para ayudarte a elegir el mueble ideal. Escribinos o visitanos en nuestro local.</p>
+
+          <div class="contact-details">
+
+            <div class="contact-item">
+              <div class="contact-icon">📍</div>
+              <div class="contact-text">
+                <strong>Dirección</strong>
+                <span class="real">Av. Las Américas c/Irigoyen 3027</span>
+              </div>
+            </div>
+
+            <div class="contact-item">
+              <div class="contact-icon">📞</div>
+              <div class="contact-text">
+                <strong>Teléfono / WhatsApp</strong>
+                <a href="https://wa.me/5493764883868" target="_blank" rel="noopener" style="color:inherit;">
+                  <span class="real">+54 376 488-3868</span>
+                </a>
+              </div>
+            </div>
+
+            <div class="contact-item">
+              <div class="contact-icon">✉️</div>
+              <div class="contact-text">
+                <strong>Email</strong>
+                <a href="mailto:arielzu70@gmail.com" style="color:inherit;">
+                  <span class="real">arielzu70@gmail.com</span>
+                </a>
+              </div>
+            </div>
+
+            <div class="contact-item">
+              <div class="contact-icon">🕐</div>
+              <div class="contact-text">
+                <strong>Horario de atención</strong>
+                <span class="real">Lun–Vie: 8:30–12:00 · 16:00–20:30<br>Sábados: 9:00–11:45</span>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="social-links">
+            <a href="#" class="social-btn" title="Facebook">f</a>
+            <a href="https://www.instagram.com/hoga_rymuebles?utm_source=qr&igsh=MWtjYXRwbjRscDdnbQ==" target="_blank" rel="noopener" class="social-btn" title="Instagram">📸</a>
+            <a href="https://wa.me/5493764883868" target="_blank" rel="noopener" class="social-btn" title="WhatsApp">💬</a>
+          </div>
+        </div>
+
+        <!-- Formulario de contacto -->
+        <div class="contact-form reveal reveal-delay-2">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="nombre">Nombre</label>
+              <input type="text" id="nombre" placeholder="Tu nombre">
+            </div>
+            <div class="form-group">
+              <label for="telefono">Teléfono</label>
+              <input type="tel" id="telefono" placeholder="Tu teléfono">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" placeholder="tu@email.com">
+          </div>
+          <div class="form-group">
+            <label for="interes">¿Qué te interesa?</label>
+            <select id="interes">
+              <option value="">Seleccioná una categoría...</option>
+              <option>Living & Sala</option>
+              <option>Dormitorios</option>
+              <option>Comedor</option>
+              <option>Oficina & Estudio</option>
+              <option>Exterior & Jardín</option>
+              <option>Otro</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="mensaje">Mensaje</label>
+            <textarea id="mensaje" placeholder="Contanos qué estás buscando..."></textarea>
+          </div>
+          <button class="form-submit" onclick="enviarFormulario()">Enviar consulta →</button>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══ MAPA ═══════════════════════════════════════════════════ -->
+  <div class="map-section" style="display:block;padding:0;height:380px;">
+    <iframe
+      src="https://maps.google.com/maps?q=-27.464990,-55.856269&z=16&output=embed"
+      width="100%"
+      height="380"
+      style="border:0;display:block;"
+      allowfullscreen=""
+      loading="lazy"
+      referrerpolicy="no-referrer-when-downgrade"
+      title="Ubicación Hogar y Muebles">
+    </iframe>
   </div>
 
-  <!-- RESULT CARD -->
-  <div class="result-card" id="resultCard">
-    <div class="result-title">⚔ Resumen de la Ronda</div>
-    <div class="result-grid">
-      <div class="result-hero rh1">
-        <div class="rh-player" id="rp1label">JUGADOR 1</div>
-        <div class="rh-hero" id="rp1hero">—</div>
-        <div class="rh-role" id="rp1role"></div>
+
+  <!-- ═══ FOOTER ════════════════════════════════════════════════ -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+
+        <div class="footer-brand">
+          <div class="footer-logo">Hogar <span>&</span> Muebles</div>
+          <p>
+            Muebles de calidad para transformar tu hogar. 
+            Visitanos en nuestro showroom o consultanos por WhatsApp.
+          </p>
+        </div>
+
+        <div class="footer-col">
+          <h4>Catálogo</h4>
+          <ul>
+            <li><a href="#categorias">Living & Sala</a></li>
+            <li><a href="#categorias">Dormitorios</a></li>
+            <li><a href="#categorias">Comedor</a></li>
+            <li><a href="#categorias">Oficina</a></li>
+            <li><a href="#categorias">Exterior</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Empresa</h4>
+          <ul>
+            <li><a href="#nosotros">Quiénes somos</a></li>
+            <li><a href="#contacto">Contacto</a></li>
+            <!-- ✏️ Agregar más links si tenés (ej: política de garantía, envíos) -->
+            <li><a href="#">Envíos y entregas</a></li>
+            <li><a href="#">Garantía</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Seguinos</h4>
+          <ul>
+            <li><a href="#">Facebook</a></li>
+            <li><a href="https://www.instagram.com/hoga_rymuebles?utm_source=qr&igsh=MWtjYXRwbjRscDdnbQ==" target="_blank" rel="noopener">Instagram</a></li>
+            <li><a href="https://wa.me/5493764883868" target="_blank" rel="noopener">WhatsApp</a></li>
+            <!-- ✏️ Reemplazar # con links reales -->
+          </ul>
+        </div>
+
       </div>
-      <div class="result-hero rh2">
-        <div class="rh-player" id="rp2label">JUGADOR 2</div>
-        <div class="rh-hero" id="rp2hero">—</div>
-        <div class="rh-role" id="rp2role"></div>
+
+      <div class="footer-bottom">
+        <p>© 2025 Hogar y Muebles. Todos los derechos reservados.</p>
+        <p>Diseño web por <em>tu nombre o agencia</em></p>
       </div>
     </div>
-    <div class="result-challenge">
-      <div class="rc-label">🎯 RETO ACTIVO</div>
-      <div class="rc-text" id="rcText">—</div>
-    </div>
-  </div>
+  </footer>
 
-  <!-- HISTORY -->
-  <div class="history-section" id="historySection">
-    <div class="history-header">
-      <span class="history-title">📜 Historial de Rondas</span>
-      <button class="btn-clear" onclick="clearHistory()">Borrar</button>
-    </div>
-    <div class="history-list" id="historyList"></div>
-  </div>
 
-  <footer>PRIMERA EN LLEGAR A 3 KILLS O DESTRUIR LA TORRE GANA</footer>
+  <!-- ═══ JAVASCRIPT ════════════════════════════════════════════ -->
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    /* ── Scroll reveal ──────────────────────────────────────── */
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
 
-</div>
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-<script>
-  // ────────────────────────────────────────────────────────────────
-  // DATA
-  // ────────────────────────────────────────────────────────────────
-  const heroes = [
-    { name: "Aamon",        role: "Asesino" },
-    { name: "Akai",         role: "Tank" },
-    { name: "Aldous",       role: "Combatiente" },
-    { name: "Alice",        role: "Mago" },
-    { name: "Alpha",        role: "Combatiente" },
-    { name: "Alucard",      role: "Combatiente" },
-    { name: "Argus",        role: "Combatiente" },
-    { name: "Arlott",       role: "Asesino" },
-    { name: "Atlas",        role: "Tank" },
-    { name: "Aulus",        role: "Combatiente" },
-    { name: "Aurora",       role: "Mago" },
-    { name: "Badang",       role: "Combatiente" },
-    { name: "Balmond",      role: "Combatiente" },
-    { name: "Bane",         role: "Combatiente" },
-    { name: "Barats",       role: "Tank" },
-    { name: "Baxia",        role: "Tank" },
-    { name: "Beatrix",      role: "Tirador" },
-    { name: "Belerick",     role: "Tank" },
-    { name: "Benedetta",    role: "Asesino" },
-    { name: "Brody",        role: "Tirador" },
-    { name: "Bruno",        role: "Tirador" },
-    { name: "Carmilla",     role: "Apoyo" },
-    { name: "Cecilion",     role: "Mago" },
-    { name: "Chang'e",      role: "Mago" },
-    { name: "Chip",         role: "Apoyo" },
-    { name: "Ciclope",      role: "Mago" },
-    { name: "Claude",       role: "Tirador" },
-    { name: "Clint",        role: "Tirador" },
-    { name: "Chou",         role: "Combatiente" },
-    { name: "Cici",         role: "Combatiente" },
-    { name: "Diggie",       role: "Apoyo" },
-    { name: "Dyrroth",      role: "Combatiente" },
-    { name: "Edith",        role: "Tank" },
-    { name: "Esmeralda",    role: "Tank" },
-    { name: "Estes",        role: "Apoyo" },
-    { name: "Fanny",        role: "Asesino" },
-    { name: "Faramis",      role: "Apoyo" },
-    { name: "Floryn",       role: "Apoyo" },
-    { name: "Franco",       role: "Tank" },
-    { name: "Fredrinn",     role: "Tank" },
-    { name: "Freya",        role: "Combatiente" },
-    { name: "GatotKaca",    role: "Tank" },
-    { name: "Gloo",         role: "Tank" },
-    { name: "Gord",         role: "Mago" },
-    { name: "Granger",      role: "Tirador" },
-    { name: "Grock",        role: "Tank" },
-    { name: "Guinevere",    role: "Combatiente" },
-    { name: "Gusion",       role: "Asesino" },
-    { name: "Hanabi",       role: "Tirador" },
-    { name: "Hanzo",        role: "Asesino" },
-    { name: "Harith",       role: "Mago" },
-    { name: "Harley",       role: "Mago" },
-    { name: "Hayabusa",     role: "Asesino" },
-    { name: "Helcurt",      role: "Asesino" },
-    { name: "Hilda",        role: "Combatiente" },
-    { name: "Hylos",        role: "Tank" },
-    { name: "Irithel",      role: "Tirador" },
-    { name: "Ixia",         role: "Tirador" },
-    { name: "Jawhead",      role: "Combatiente" },
-    { name: "Johnson",      role: "Tank" },
-    { name: "Joy",          role: "Asesino" },
-    { name: "Julian",       role: "Combatiente" },
-    { name: "Kadita",       role: "Mago" },
-    { name: "Kagura",       role: "Mago" },
-    { name: "Kaja",         role: "Apoyo" },
-    { name: "Kalea",        role: "Apoyo" },
-    { name: "Karrie",       role: "Tirador" },
-    { name: "Karina",       role: "Asesino" },
-    { name: "Khaleed",      role: "Combatiente" },
-    { name: "Khufra",       role: "Tank" },
-    { name: "Kimmy",        role: "Tirador" },
-    { name: "Lapu-Lapu",    role: "Combatiente" },
-    { name: "Layla",        role: "Tirador" },
-    { name: "Lancelot",     role: "Asesino" },
-    { name: "Leomord",      role: "Combatiente" },
-    { name: "Lesley",       role: "Tirador" },
-    { name: "Ling",         role: "Asesino" },
-    { name: "Lolita",       role: "Apoyo" },
-    { name: "Lukas",        role: "Combatiente" },
-    { name: "Lunox",        role: "Mago" },
-    { name: "Luo Yi",       role: "Mago" },
-    { name: "Lylia",        role: "Mago" },
-    { name: "Martis",       role: "Combatiente" },
-    { name: "Masha",        role: "Tank" },
-    { name: "Mathilda",     role: "Apoyo" },
-    { name: "Melissa",      role: "Tirador" },
-    { name: "Minsitthar",   role: "Combatiente" },
-    { name: "Minotauro",    role: "Apoyo" },
-    { name: "Miya",         role: "Tirador" },
-    { name: "Moskov",       role: "Tirador" },
-    { name: "Nana",         role: "Mago" },
-    { name: "Natan",        role: "Tirador" },
-    { name: "Natalia",      role: "Asesino" },
-    { name: "Nolan",        role: "Asesino" },
-    { name: "Novaria",      role: "Mago" },
-    { name: "Obsidia",      role: "Tirador" },
-    { name: "Odette",       role: "Mago" },
-    { name: "Paquito",      role: "Combatiente" },
-    { name: "Pharsa",       role: "Mago" },
-    { name: "Phoveus",      role: "Combatiente" },
-    { name: "Popol y Kupa", role: "Tirador" },
-    { name: "Rafaela",      role: "Apoyo" },
-    { name: "Roger",        role: "Combatiente" },
-    { name: "Ruby",         role: "Combatiente" },
-    { name: "Saber",        role: "Asesino" },
-    { name: "Selena",       role: "Asesino" },
-    { name: "Silvanna",     role: "Combatiente" },
-    { name: "Sora",         role: "Asesino" },
-    { name: "Sun",          role: "Combatiente" },
-    { name: "Suyou",        role: "Asesino" },
-    { name: "Terizla",      role: "Combatiente" },
-    { name: "Thamuz",       role: "Combatiente" },
-    { name: "Tigreal",      role: "Tank" },
-    { name: "Uranus",       role: "Tank" },
-    { name: "Vale",         role: "Mago" },
-    { name: "Valentina",    role: "Mago" },
-    { name: "Valir",        role: "Mago" },
-    { name: "Vexana",       role: "Mago" },
-    { name: "Wanwan",       role: "Tirador" },
-    { name: "X.Borg",       role: "Combatiente" },
-    { name: "Xavier",       role: "Mago" },
-    { name: "Yi Sun-Shin",  role: "Tirador" },
-    { name: "Yin",          role: "Combatiente" },
-    { name: "Yu Zhong",     role: "Combatiente" },
-    { name: "Yve",          role: "Mago" },
-    { name: "Zetian",       role: "Mago" },
-    { name: "Zilong",       role: "Combatiente" },
-    { name: "Zhask",        role: "Mago" },
-    { name: "Zhuxin",       role: "Mago" },
-  ];
+    /* ── Navbar scroll shadow ───────────────────────────────── */
+    window.addEventListener('scroll', () => {
+      document.getElementById('navbar').style.boxShadow =
+        window.scrollY > 40 ? '0 4px 24px rgba(61,43,31,0.10)' : 'none';
+    });
 
-  const challenges = [
-    "¡Solo puedes usar ataques básicos, CERO habilidades!",
-    "¡Solo puedes usar habilidades, CERO ataques básicos!",
-    "Cada vez que mates al rival debes esperar 5 segundos sin moverte antes de atacar",
-    "¡Debes anunciar en el chat qué habilidad vas a usar ANTES de usarla!",
-    "Juega con el teléfono o pantalla al revés 🙃",
-    "No puedes retroceder, solo moverte hacia adelante",
-    "Debes escribir 'EZ' en el chat después de cada kill",
-    "¡Tienes que gritar el nombre de tu héroe cada vez que hagas kill!",
-    "No puedes mirar el minimapa, tápalo con un dedo",
-    "Solo puedes comprar los ítems más caros del juego",
-    "Debes hacer 5 sentadillas cada vez que mueras 💀",
-    "¡Tienes prohibido usar el ultimate durante el primer minuto!",
-    "Debes jugar con los ojos cerrados durante 5 segundos al inicio de cada pelea",
-    "Cada vez que uses una habilidad debes decir su nombre en voz alta",
-    "¡Ambos jugadores solo pueden usar su habilidad 1!",
-    "Debes comer algo picante si pierdes una vida 🌶️",
-    "Juega usando solo el pulgar de la mano no dominante",
-    "¡Debes saludar al rival en el chat antes de cada pelea!",
-    "Solo puedes atacar cuando el rival te ataque primero",
-    "¡Debes usar el spell de retroceso (si lo tienes) en cada teamfight!",
-    "Tienes que gritar '¡BOOM!' cada vez que uses tu ultimate",
-    "Debes bailar (gira en círculos) durante 3 segundos después de cada kill",
-    "¡No puedes usar ningún ítem defensivo! Solo daño puro",
-    "Ambos jugadores deben llevar el spell Flicker obligatorio",
-    "¡Debes escribir el nombre de tu héroe antes de cada ultimate!",
-    "Solo puedes atacar moviéndote en zigzag, nunca en línea recta",
-    "¡Tienes que reírte en voz alta cada vez que esquives un ataque!",
-    "Debes pedir permiso en el chat antes de usar tu ultimate",
-    "¡Sin boots! No puedes comprar ningún ítem de velocidad de movimiento",
-    "Cada habilidad que falles te cuesta 5 flexiones 💪",
-    "Debes mirar al techo durante 2 segundos después de cada kill",
-    "¡Solo puedes atacar de espaldas al rival!",
-    "Ambos jugadores deben hacer un torneíto de piedra papel tijera antes de cada ronda",
-    "Tienes que describirle al rival lo que vas a hacer ANTES de hacerlo",
-    "¡El que llore primero pierde automáticamente! Cara seria obligatoria 😐",
-    "Debes decir 'Lo siento' en el chat cada vez que mates al rival",
-    "¡No puedes usar items activos durante la pelea!",
-    "Después de cada kill debes esperar a que el rival llegue a mitad del mapa antes de atacar",
-    "¡Debes construir un build totalmente random, sin pensar!",
-    "Tienes que tararear tu canción favorita mientras juegas 🎵",
-  ];
-
-  // ────────────────────────────────────────────────────────────────
-  // STATE
-  // ────────────────────────────────────────────────────────────────
-  let spinning = false;
-  let history = [];
-  let round = 0;
-  let lastH1 = null, lastH2 = null, lastCh = null;
-
-  // ────────────────────────────────────────────────────────────────
-  // HELPERS
-  // ────────────────────────────────────────────────────────────────
-  function rand(arr, exclude = null) {
-    let r;
-    do { r = arr[Math.floor(Math.random() * arr.length)]; } while (arr.length > 1 && r === exclude);
-    return r;
-  }
-
-  function randHero(excludeName = null) {
-    let h;
-    do { h = heroes[Math.floor(Math.random() * heroes.length)]; } while (h.name === excludeName);
-    return h;
-  }
-
-  function buildHeroItem(hero, player) {
-    const nameClass = player === 1 ? 'p1-name' : 'p2-name';
-    return `<div class="slot-item">
-      <div class="hero-role-badge role-${hero.role}">${hero.role}</div>
-      <div class="hero-name ${nameClass}">${hero.name}</div>
-    </div>`;
-  }
-
-  function buildChallengeItem(text) {
-    return `<div class="challenge-item"><div class="challenge-text">${text}</div></div>`;
-  }
-
-  // ────────────────────────────────────────────────────────────────
-  // SLOT ANIMATION
-  // ────────────────────────────────────────────────────────────────
-  function animateSlot(tapeId, buildItem, getItems, finalItem, duration, callback) {
-    const tape = document.getElementById(tapeId);
-    const ITEM_H = tapeId === 'tapeCh' ? 100 : 130;
-    const items = getItems();
-    const allItems = [...items, finalItem];
-    const totalItems = allItems.length;
-
-    // Build tape
-    tape.innerHTML = allItems.map(buildItem).join('');
-    tape.style.transition = 'none';
-    tape.style.transform = `translateY(0px)`;
-
-    let currentIndex = 0;
-    const totalScroll = (totalItems - 1) * ITEM_H;
-
-    // Ease out scroll
-    const startTime = performance.now();
-
-    function tick(now) {
-      const elapsed = now - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      // Ease out cubic
-      const eased = 1 - Math.pow(1 - progress, 3);
-      const y = -eased * totalScroll;
-
-      tape.style.transform = `translateY(${y}px)`;
-
-      if (progress < 1) {
-        requestAnimationFrame(tick);
-      } else {
-        tape.style.transform = `translateY(-${totalScroll}px)`;
-        if (callback) callback();
-      }
+    /* ── Mobile menu toggle ─────────────────────────────────── */
+    function toggleMenu() {
+      const links = document.querySelector('.nav-links');
+      const cta   = document.querySelector('.nav-cta');
+      if (!links) return;
+      const isOpen = links.style.display === 'flex';
+      links.style.cssText = isOpen ? '' : 'display:flex;flex-direction:column;position:absolute;top:70px;left:0;right:0;background:var(--warm-white);padding:1.5rem 2rem;gap:1rem;border-bottom:1px solid var(--sand);z-index:99';
+      if (cta) cta.style.display = isOpen ? '' : 'block';
     }
 
-    requestAnimationFrame(tick);
-  }
+    /* ── Formulario: enviar por WhatsApp ───────────────────────
+       Reemplazá TUNUMERO por el número real de WhatsApp (ej: 5493764XXXXXXX)
+    ───────────────────────────────────────────────────────── */
+    function enviarFormulario() {
+      const nombre   = document.getElementById('nombre').value.trim();
+      const telefono = document.getElementById('telefono').value.trim();
+      const email    = document.getElementById('email').value.trim();
+      const interes  = document.getElementById('interes').value;
+      const mensaje  = document.getElementById('mensaje').value.trim();
 
-  // ────────────────────────────────────────────────────────────────
-  // MAIN SPIN
-  // ────────────────────────────────────────────────────────────────
-  function spinAll() {
-    if (spinning) return;
-    spinning = true;
-    document.getElementById('btnSpin').disabled = true;
-    document.getElementById('resultCard').classList.remove('visible');
+      if (!nombre) { alert('Por favor ingresá tu nombre.'); return; }
 
-    const h1 = randHero(lastH1 ? lastH1.name : null);
-    const h2 = randHero(h1.name); // ensure different heroes
-    const ch = rand(challenges, lastCh);
-
-    // Build random scroll items (decoys)
-    function getHeroItems1() {
-      const decoys = [];
-      for (let i = 0; i < 18; i++) decoys.push(heroes[Math.floor(Math.random() * heroes.length)]);
-      return decoys.map(h => buildHeroItem(h, 1));
+      const texto = `Hola! Consulta desde la web 🏠\n\n` +
+        `*Nombre:* ${nombre}\n` +
+        (telefono ? `*Teléfono:* ${telefono}\n` : '') +
+        (email    ? `*Email:* ${email}\n`        : '') +
+        (interes  ? `*Interés:* ${interes}\n`    : '') +
+        (mensaje  ? `*Mensaje:* ${mensaje}`       : '');
+      const numero = '5493764883868';
+      window.open(`https://wa.me/${numero}?text=${encodeURIComponent(texto)}`, '_blank');
     }
-    function getHeroItems2() {
-      const decoys = [];
-      for (let i = 0; i < 22; i++) decoys.push(heroes[Math.floor(Math.random() * heroes.length)]);
-      return decoys.map(h => buildHeroItem(h, 2));
-    }
-    function getChallengeItems() {
-      const decoys = [];
-      for (let i = 0; i < 20; i++) decoys.push(challenges[Math.floor(Math.random() * challenges.length)]);
-      return decoys.map(c => buildChallengeItem(c));
-    }
+  </script>
 
-    let done = 0;
-    function onDone() {
-      done++;
-      if (done === 3) finalize(h1, h2, ch);
-    }
-
-    animateSlot('tape1',
-      item => (typeof item === 'string' ? item : buildHeroItem(item, 1)),
-      () => { const d=[]; for(let i=0;i<18;i++) d.push(heroes[Math.floor(Math.random()*heroes.length)]); return d; },
-      h1,
-      2400,
-      onDone
-    );
-    // Patch tape1 - already built with strings, rebuild properly
-    (function() {
-      const tape = document.getElementById('tape1');
-      const ITEM_H = 130;
-      const decoys = [];
-      for(let i = 0; i < 18; i++) decoys.push(heroes[Math.floor(Math.random() * heroes.length)]);
-      const allItems = [...decoys, h1];
-      tape.innerHTML = allItems.map(h => buildHeroItem(h, 1)).join('');
-      tape.style.transform = 'translateY(0px)';
-      const totalScroll = (allItems.length - 1) * ITEM_H;
-      const dur = 2400;
-      const start = performance.now();
-      function tick1(now) {
-        const e = Math.min((now - start) / dur, 1);
-        const eased = 1 - Math.pow(1 - e, 3);
-        tape.style.transform = `translateY(${-eased * totalScroll}px)`;
-        if (e < 1) requestAnimationFrame(tick1);
-        else { tape.style.transform = `translateY(-${totalScroll}px)`; onDone(); }
-      }
-      requestAnimationFrame(tick1);
-    })();
-
-    (function() {
-      const tape = document.getElementById('tape2');
-      const ITEM_H = 130;
-      const decoys = [];
-      for(let i = 0; i < 22; i++) decoys.push(heroes[Math.floor(Math.random() * heroes.length)]);
-      const allItems = [...decoys, h2];
-      tape.innerHTML = allItems.map(h => buildHeroItem(h, 2)).join('');
-      tape.style.transform = 'translateY(0px)';
-      const totalScroll = (allItems.length - 1) * ITEM_H;
-      const dur = 2900;
-      const start = performance.now();
-      function tick2(now) {
-        const e = Math.min((now - start) / dur, 1);
-        const eased = 1 - Math.pow(1 - e, 3);
-        tape.style.transform = `translateY(${-eased * totalScroll}px)`;
-        if (e < 1) requestAnimationFrame(tick2);
-        else { tape.style.transform = `translateY(-${totalScroll}px)`; onDone(); }
-      }
-      requestAnimationFrame(tick2);
-    })();
-
-    (function() {
-      const tape = document.getElementById('tapeCh');
-      const ITEM_H = 100;
-      const decoys = [];
-      for(let i = 0; i < 20; i++) decoys.push(challenges[Math.floor(Math.random() * challenges.length)]);
-      const allItems = [...decoys, ch];
-      tape.innerHTML = allItems.map(c => buildChallengeItem(c)).join('');
-      tape.style.transform = 'translateY(0px)';
-      const totalScroll = (allItems.length - 1) * ITEM_H;
-      const dur = 3400;
-      const start = performance.now();
-      function tick3(now) {
-        const e = Math.min((now - start) / dur, 1);
-        const eased = 1 - Math.pow(1 - e, 3);
-        tape.style.transform = `translateY(${-eased * totalScroll}px)`;
-        if (e < 1) requestAnimationFrame(tick3);
-        else { tape.style.transform = `translateY(-${totalScroll}px)`; onDone(); }
-      }
-      requestAnimationFrame(tick3);
-    })();
-
-    // We called onDone from tape1 manually above, so reset done count
-    done = -2; // Will be called 3 times from the 3 functions above
-  }
-
-  function finalize(h1, h2, ch) {
-    lastH1 = h1; lastH2 = h2; lastCh = ch;
-    round++;
-
-    const p1name = document.getElementById('p1name').value || 'Jugador 1';
-    const p2name = document.getElementById('p2name').value || 'Jugador 2';
-
-    // Show result card
-    const rc = document.getElementById('resultCard');
-    document.getElementById('rp1label').textContent = p1name.toUpperCase();
-    document.getElementById('rp2label').textContent = p2name.toUpperCase();
-    document.getElementById('rp1hero').textContent = h1.name;
-    document.getElementById('rp1role').textContent = h1.role;
-    document.getElementById('rp2hero').textContent = h2.name;
-    document.getElementById('rp2role').textContent = h2.role;
-    document.getElementById('rcText').textContent = ch;
-    rc.classList.add('visible');
-
-    // History
-    history.unshift({ round, p1: { name: p1name, hero: h1 }, p2: { name: p2name, hero: h2 }, ch });
-    renderHistory();
-
-    spinning = false;
-    document.getElementById('btnSpin').disabled = false;
-  }
-
-  function renderHistory() {
-    const hs = document.getElementById('historySection');
-    const hl = document.getElementById('historyList');
-    if (history.length === 0) { hs.classList.remove('visible'); return; }
-    hs.classList.add('visible');
-    hl.innerHTML = history.map(e => `
-      <div class="history-item">
-        <span class="hi-round">R${e.round}</span>
-        <span class="hi-p1">${e.p1.hero.name}</span>
-        <span class="hi-p2">${e.p2.hero.name}</span>
-        <span class="hi-ch">${e.ch.length > 50 ? e.ch.slice(0, 50) + '…' : e.ch}</span>
-      </div>
-    `).join('');
-  }
-
-  function clearHistory() {
-    history = [];
-    round = 0;
-    renderHistory();
-  }
-</script>
 </body>
 </html>
