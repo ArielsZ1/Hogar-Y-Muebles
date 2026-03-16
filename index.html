@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ML 1v1 Ruleta Caótica</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #f0c040;
+    --gold-dim: #a07820;
+    --blue: #00d4ff;
+    --blue-dim: #005566;
+    --red: #ff3c5a;
+    --purple: #b060ff;
+    --bg: #07090f;
+    --panel: #0d1120;
+    --panel2: #111828;
+    --border: #1e2d4a;
+    --text: #ccd6f6;
+    --glow-gold: 0 0 10px #f0c040aa, 0 0 30px #f0c04055;
+    --glow-blue: 0 0 10px #00d4ffaa, 0 0 30px #00d4ff55;
+    --glow-red: 0 0 10px #ff3c5aaa, 0 0 30px #ff3c5a55;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    background-image:
+      radial-gradient(ellipse at 20% 0%, #0d2040 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 100%, #1a0830 0%, transparent 50%);
+  }
+
+  /* Animated grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 20px 16px 60px;
+  }
+
+  /* ── HEADER ── */
+  header {
+    text-align: center;
+    padding: 30px 0 10px;
+    position: relative;
+  }
+
+  header::after {
+    content: '';
+    display: block;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), var(--blue), transparent);
+    margin-top: 20px;
+  }
+
+  .logo-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #f0c040, #ff8c00);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(11px, 2vw, 13px);
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(28px, 6vw, 62px);
+    font-weight: 900;
+    line-height: 1;
+    text-transform: uppercase;
+    background: linear-gradient(180deg, #ffffff 0%, #00d4ff 60%, #0066aa 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 20px #00d4ff66);
+    margin-bottom: 6px;
+  }
+
+  .subtitle {
+    font-size: 16px;
+    color: #6080a0;
+    letter-spacing: 2px;
+    font-weight: 600;
+  }
+
+  /* ── SPIN BUTTON ── */
+  .spin-center {
+    display: flex;
+    justify-content: center;
+    margin: 30px 0 24px;
+  }
+
+  .btn-spin {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 18px 56px;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    background: linear-gradient(135deg, #f0c040, #e07000, #f0c040);
+    background-size: 200% 200%;
+    color: #07090f;
+    clip-path: polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%);
+    transition: transform 0.15s, filter 0.15s;
+    animation: shimmer 3s linear infinite;
+  }
+
+  .btn-spin:hover {
+    filter: brightness(1.2) drop-shadow(0 0 16px #f0c040cc);
+    transform: scale(1.04);
+  }
+
+  .btn-spin:active { transform: scale(0.97); }
+
+  .btn-spin:disabled {
+    background: #2a3040;
+    color: #405060;
+    cursor: not-allowed;
+    filter: none;
+    animation: none;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* ── HERO SLOTS ── */
+  .heroes-row {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 16px;
+    align-items: start;
+    margin-bottom: 24px;
+  }
+
+  .vs-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 60px;
+  }
+
+  .vs-text {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 36px;
+    font-weight: 900;
+    color: var(--red);
+    text-shadow: var(--glow-red);
+    animation: pulse-vs 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-vs {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(0.92); }
+  }
+
+  .player-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .player-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+
+  .player-card.p1::before { background: linear-gradient(90deg, var(--blue), transparent); }
+  .player-card.p2::before { background: linear-gradient(90deg, transparent, var(--red)); }
+
+  .player-label {
+    padding: 14px 20px 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .player-num {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    padding: 4px 10px;
+    clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+  }
+
+  .p1 .player-num { background: var(--blue); color: #000; }
+  .p2 .player-num { background: var(--red); color: #fff; }
+
+  .player-name-input {
+    background: transparent;
+    border: none;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    outline: none;
+    width: 100%;
+    letter-spacing: 1px;
+  }
+
+  /* Hero slot machine */
+  .slot-wrapper {
+    padding: 16px 20px;
+    height: 130px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .slot-tape {
+    position: absolute;
+    left: 0; right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: none;
+  }
+
+  .slot-item {
+    height: 130px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 10px;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .hero-role-badge {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    clip-path: polygon(4px 0%, 100% 0%, calc(100% - 4px) 100%, 0% 100%);
+  }
+
+  .hero-name {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(16px, 3vw, 24px);
+    font-weight: 700;
+    text-align: center;
+    line-height: 1.1;
+  }
+
+  .hero-name.p1-name { color: var(--blue); text-shadow: var(--glow-blue); }
+  .hero-name.p2-name { color: var(--red); text-shadow: var(--glow-red); }
+
+  /* Scan lines overlay on slots */
+  .slot-wrapper::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.08) 2px,
+      rgba(0,0,0,0.08) 4px
+    );
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  /* Highlight line */
+  .slot-highlight {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 0; right: 0;
+    height: 2px;
+    z-index: 3;
+    pointer-events: none;
+  }
+
+  .p1 .slot-highlight { background: linear-gradient(90deg, transparent, var(--blue), transparent); }
+  .p2 .slot-highlight { background: linear-gradient(90deg, transparent, var(--red), transparent); }
+
+  .slot-top-fade, .slot-bottom-fade {
+    position: absolute;
+    left: 0; right: 0;
+    height: 40%;
+    z-index: 3;
+    pointer-events: none;
+  }
+
+  .slot-top-fade { top: 0; background: linear-gradient(to bottom, var(--panel), transparent); }
+  .slot-bottom-fade { bottom: 0; background: linear-gradient(to top, var(--panel), transparent); }
+
+  /* ── CHALLENGE SECTION ── */
+  .challenge-section {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+
+  .challenge-section::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--purple), var(--gold), var(--purple));
+  }
+
+  .section-header {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-icon {
+    font-size: 20px;
+  }
+
+  .section-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+
+  .challenge-slot-wrapper {
+    height: 100px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .challenge-tape {
+    position: absolute;
+    left: 0; right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: none;
+  }
+
+  .challenge-item {
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 24px;
+    text-align: center;
+    flex-shrink: 0;
+    width: 100%;
+  }
+
+  .challenge-text {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(12px, 2.5vw, 18px);
+    font-weight: 700;
+    color: var(--gold);
+    text-shadow: var(--glow-gold);
+    line-height: 1.4;
+  }
+
+  .challenge-slot-wrapper::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg, transparent, transparent 2px,
+      rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px
+    );
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .ch-top-fade, .ch-bottom-fade {
+    position: absolute; left: 0; right: 0;
+    height: 35%; z-index: 3; pointer-events: none;
+  }
+
+  .ch-top-fade { top: 0; background: linear-gradient(to bottom, var(--panel), transparent); }
+  .ch-bottom-fade { bottom: 0; background: linear-gradient(to top, var(--panel), transparent); }
+
+  .ch-highlight {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    left: 0; right: 0; height: 2px; z-index: 3; pointer-events: none;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+
+  /* ── RESULT CARD ── */
+  .result-card {
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    padding: 20px 24px;
+    display: none;
+    position: relative;
+    overflow: hidden;
+    animation: fadeIn 0.5s ease;
+  }
+
+  .result-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--blue), var(--purple), var(--gold), var(--red));
+    animation: rainbow-slide 2s linear infinite;
+    background-size: 200% 100%;
+  }
+
+  @keyframes rainbow-slide {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 200% 0%; }
+  }
+
+  .result-card.visible { display: block; }
+
+  .result-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: #506080;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+
+  .result-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .result-hero {
+    padding: 14px;
+    border: 1px solid var(--border);
+    position: relative;
+  }
+
+  .result-hero.rh1 { border-left: 3px solid var(--blue); }
+  .result-hero.rh2 { border-left: 3px solid var(--red); }
+
+  .rh-player { font-size: 11px; letter-spacing: 2px; color: #506080; font-weight: 700; margin-bottom: 4px; }
+  .rh-hero { font-family: 'Orbitron', sans-serif; font-size: 18px; font-weight: 700; }
+  .rh1 .rh-hero { color: var(--blue); }
+  .rh2 .rh-hero { color: var(--red); }
+  .rh-role { font-size: 11px; color: #506080; margin-top: 4px; }
+
+  .result-challenge {
+    padding: 14px;
+    border: 1px solid #2a1f00;
+    background: #0f0c00;
+    border-left: 3px solid var(--gold);
+  }
+
+  .rc-label { font-size: 11px; letter-spacing: 2px; color: #806030; font-weight: 700; margin-bottom: 6px; }
+  .rc-text { font-family: 'Orbitron', sans-serif; font-size: 15px; font-weight: 700; color: var(--gold); line-height: 1.4; }
+
+  /* ── HISTORY ── */
+  .history-section {
+    margin-top: 24px;
+    display: none;
+  }
+
+  .history-section.visible { display: block; }
+
+  .history-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .history-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: #506080;
+    text-transform: uppercase;
+  }
+
+  .btn-clear {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 12px;
+    letter-spacing: 2px;
+    font-weight: 700;
+    background: transparent;
+    border: 1px solid #2a3040;
+    color: #506080;
+    padding: 4px 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+
+  .btn-clear:hover { border-color: var(--red); color: var(--red); }
+
+  .history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 240px;
+    overflow-y: auto;
+  }
+
+  .history-list::-webkit-scrollbar { width: 4px; }
+  .history-list::-webkit-scrollbar-track { background: transparent; }
+  .history-list::-webkit-scrollbar-thumb { background: var(--border); }
+
+  .history-item {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 10px 14px;
+    display: grid;
+    grid-template-columns: auto 1fr 1fr 2fr;
+    gap: 10px;
+    align-items: center;
+    font-size: 13px;
+    opacity: 0;
+    animation: fadeIn 0.3s ease forwards;
+  }
+
+  .hi-round { font-family: 'Orbitron', sans-serif; font-size: 10px; color: #405060; font-weight: 700; }
+  .hi-p1 { color: var(--blue); font-weight: 700; }
+  .hi-p2 { color: var(--red); font-weight: 700; }
+  .hi-ch { color: var(--gold-dim); font-size: 12px; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── ROLE COLORS ── */
+  .role-Tank { background: #0d2a3a; color: #40a0c0; }
+  .role-Combatiente { background: #2a0d0d; color: #c04040; }
+  .role-Asesino { background: #1a0d2a; color: #8040c0; }
+  .role-Mago { background: #0d1a2a; color: #4080c0; }
+  .role-Tirador { background: #2a1f0d; color: #c08040; }
+  .role-Apoyo { background: #0d2a1a; color: #40c080; }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center;
+    padding: 30px 0 0;
+    font-size: 12px;
+    color: #2a3a50;
+    letter-spacing: 2px;
+  }
+
+  /* mobile tweaks */
+  @media (max-width: 600px) {
+    .heroes-row { grid-template-columns: 1fr; }
+    .vs-divider { padding-top: 0; }
+    .result-grid { grid-template-columns: 1fr; }
+    .history-item { grid-template-columns: auto 1fr 1fr; }
+    .hi-ch { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo-badge">Mobile Legends Bang Bang</div>
+    <h1>1v1 Ruleta Caótica</h1>
+    <p class="subtitle">Suerte al máximo · Sin excusas · Puro caos</p>
+  </header>
+
+  <!-- SPIN BUTTON -->
+  <div class="spin-center">
+    <button class="btn-spin" id="btnSpin" onclick="spinAll()">⚡ GIRAR TODO ⚡</button>
+  </div>
+
+  <!-- HERO SLOTS -->
+  <div class="heroes-row">
+
+    <!-- PLAYER 1 -->
+    <div class="player-card p1">
+      <div class="player-label">
+        <span class="player-num">J1</span>
+        <input class="player-name-input" type="text" value="Jugador 1" id="p1name" maxlength="16" />
+      </div>
+      <div class="slot-wrapper">
+        <div class="slot-tape" id="tape1">
+          <div class="slot-item">
+            <div class="hero-role-badge role-Tank">Tank</div>
+            <div class="hero-name p1-name">???</div>
+          </div>
+        </div>
+        <div class="slot-top-fade"></div>
+        <div class="slot-bottom-fade"></div>
+        <div class="slot-highlight"></div>
+      </div>
+    </div>
+
+    <!-- VS -->
+    <div class="vs-divider">
+      <span class="vs-text">VS</span>
+    </div>
+
+    <!-- PLAYER 2 -->
+    <div class="player-card p2">
+      <div class="player-label">
+        <span class="player-num">J2</span>
+        <input class="player-name-input" type="text" value="Jugador 2" id="p2name" maxlength="16" />
+      </div>
+      <div class="slot-wrapper">
+        <div class="slot-tape" id="tape2">
+          <div class="slot-item">
+            <div class="hero-role-badge role-Tank">Tank</div>
+            <div class="hero-name p2-name">???</div>
+          </div>
+        </div>
+        <div class="slot-top-fade"></div>
+        <div class="slot-bottom-fade"></div>
+        <div class="slot-highlight"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- CHALLENGE SLOT -->
+  <div class="challenge-section">
+    <div class="section-header">
+      <span class="section-icon">🎲</span>
+      <span class="section-title">Reto de la Partida</span>
+    </div>
+    <div class="challenge-slot-wrapper">
+      <div class="challenge-tape" id="tapeCh">
+        <div class="challenge-item">
+          <div class="challenge-text">¡GIRA PARA DESCUBRIR TU RETO!</div>
+        </div>
+      </div>
+      <div class="ch-top-fade"></div>
+      <div class="ch-bottom-fade"></div>
+      <div class="ch-highlight"></div>
+    </div>
+  </div>
+
+  <!-- RESULT CARD -->
+  <div class="result-card" id="resultCard">
+    <div class="result-title">⚔ Resumen de la Ronda</div>
+    <div class="result-grid">
+      <div class="result-hero rh1">
+        <div class="rh-player" id="rp1label">JUGADOR 1</div>
+        <div class="rh-hero" id="rp1hero">—</div>
+        <div class="rh-role" id="rp1role"></div>
+      </div>
+      <div class="result-hero rh2">
+        <div class="rh-player" id="rp2label">JUGADOR 2</div>
+        <div class="rh-hero" id="rp2hero">—</div>
+        <div class="rh-role" id="rp2role"></div>
+      </div>
+    </div>
+    <div class="result-challenge">
+      <div class="rc-label">🎯 RETO ACTIVO</div>
+      <div class="rc-text" id="rcText">—</div>
+    </div>
+  </div>
+
+  <!-- HISTORY -->
+  <div class="history-section" id="historySection">
+    <div class="history-header">
+      <span class="history-title">📜 Historial de Rondas</span>
+      <button class="btn-clear" onclick="clearHistory()">Borrar</button>
+    </div>
+    <div class="history-list" id="historyList"></div>
+  </div>
+
+  <footer>PRIMERA EN LLEGAR A 3 KILLS O DESTRUIR LA TORRE GANA</footer>
+
+</div>
+
+<script>
+  // ────────────────────────────────────────────────────────────────
+  // DATA
+  // ────────────────────────────────────────────────────────────────
+  const heroes = [
+    { name: "Aamon",        role: "Asesino" },
+    { name: "Akai",         role: "Tank" },
+    { name: "Aldous",       role: "Combatiente" },
+    { name: "Alice",        role: "Mago" },
+    { name: "Alpha",        role: "Combatiente" },
+    { name: "Alucard",      role: "Combatiente" },
+    { name: "Argus",        role: "Combatiente" },
+    { name: "Arlott",       role: "Asesino" },
+    { name: "Atlas",        role: "Tank" },
+    { name: "Aulus",        role: "Combatiente" },
+    { name: "Aurora",       role: "Mago" },
+    { name: "Badang",       role: "Combatiente" },
+    { name: "Balmond",      role: "Combatiente" },
+    { name: "Bane",         role: "Combatiente" },
+    { name: "Barats",       role: "Tank" },
+    { name: "Baxia",        role: "Tank" },
+    { name: "Beatrix",      role: "Tirador" },
+    { name: "Belerick",     role: "Tank" },
+    { name: "Benedetta",    role: "Asesino" },
+    { name: "Brody",        role: "Tirador" },
+    { name: "Bruno",        role: "Tirador" },
+    { name: "Carmilla",     role: "Apoyo" },
+    { name: "Cecilion",     role: "Mago" },
+    { name: "Chang'e",      role: "Mago" },
+    { name: "Chip",         role: "Apoyo" },
+    { name: "Ciclope",      role: "Mago" },
+    { name: "Claude",       role: "Tirador" },
+    { name: "Clint",        role: "Tirador" },
+    { name: "Chou",         role: "Combatiente" },
+    { name: "Cici",         role: "Combatiente" },
+    { name: "Diggie",       role: "Apoyo" },
+    { name: "Dyrroth",      role: "Combatiente" },
+    { name: "Edith",        role: "Tank" },
+    { name: "Esmeralda",    role: "Tank" },
+    { name: "Estes",        role: "Apoyo" },
+    { name: "Fanny",        role: "Asesino" },
+    { name: "Faramis",      role: "Apoyo" },
+    { name: "Floryn",       role: "Apoyo" },
+    { name: "Franco",       role: "Tank" },
+    { name: "Fredrinn",     role: "Tank" },
+    { name: "Freya",        role: "Combatiente" },
+    { name: "GatotKaca",    role: "Tank" },
+    { name: "Gloo",         role: "Tank" },
+    { name: "Gord",         role: "Mago" },
+    { name: "Granger",      role: "Tirador" },
+    { name: "Grock",        role: "Tank" },
+    { name: "Guinevere",    role: "Combatiente" },
+    { name: "Gusion",       role: "Asesino" },
+    { name: "Hanabi",       role: "Tirador" },
+    { name: "Hanzo",        role: "Asesino" },
+    { name: "Harith",       role: "Mago" },
+    { name: "Harley",       role: "Mago" },
+    { name: "Hayabusa",     role: "Asesino" },
+    { name: "Helcurt",      role: "Asesino" },
+    { name: "Hilda",        role: "Combatiente" },
+    { name: "Hylos",        role: "Tank" },
+    { name: "Irithel",      role: "Tirador" },
+    { name: "Ixia",         role: "Tirador" },
+    { name: "Jawhead",      role: "Combatiente" },
+    { name: "Johnson",      role: "Tank" },
+    { name: "Joy",          role: "Asesino" },
+    { name: "Julian",       role: "Combatiente" },
+    { name: "Kadita",       role: "Mago" },
+    { name: "Kagura",       role: "Mago" },
+    { name: "Kaja",         role: "Apoyo" },
+    { name: "Kalea",        role: "Apoyo" },
+    { name: "Karrie",       role: "Tirador" },
+    { name: "Karina",       role: "Asesino" },
+    { name: "Khaleed",      role: "Combatiente" },
+    { name: "Khufra",       role: "Tank" },
+    { name: "Kimmy",        role: "Tirador" },
+    { name: "Lapu-Lapu",    role: "Combatiente" },
+    { name: "Layla",        role: "Tirador" },
+    { name: "Lancelot",     role: "Asesino" },
+    { name: "Leomord",      role: "Combatiente" },
+    { name: "Lesley",       role: "Tirador" },
+    { name: "Ling",         role: "Asesino" },
+    { name: "Lolita",       role: "Apoyo" },
+    { name: "Lukas",        role: "Combatiente" },
+    { name: "Lunox",        role: "Mago" },
+    { name: "Luo Yi",       role: "Mago" },
+    { name: "Lylia",        role: "Mago" },
+    { name: "Martis",       role: "Combatiente" },
+    { name: "Masha",        role: "Tank" },
+    { name: "Mathilda",     role: "Apoyo" },
+    { name: "Melissa",      role: "Tirador" },
+    { name: "Minsitthar",   role: "Combatiente" },
+    { name: "Minotauro",    role: "Apoyo" },
+    { name: "Miya",         role: "Tirador" },
+    { name: "Moskov",       role: "Tirador" },
+    { name: "Nana",         role: "Mago" },
+    { name: "Natan",        role: "Tirador" },
+    { name: "Natalia",      role: "Asesino" },
+    { name: "Nolan",        role: "Asesino" },
+    { name: "Novaria",      role: "Mago" },
+    { name: "Obsidia",      role: "Tirador" },
+    { name: "Odette",       role: "Mago" },
+    { name: "Paquito",      role: "Combatiente" },
+    { name: "Pharsa",       role: "Mago" },
+    { name: "Phoveus",      role: "Combatiente" },
+    { name: "Popol y Kupa", role: "Tirador" },
+    { name: "Rafaela",      role: "Apoyo" },
+    { name: "Roger",        role: "Combatiente" },
+    { name: "Ruby",         role: "Combatiente" },
+    { name: "Saber",        role: "Asesino" },
+    { name: "Selena",       role: "Asesino" },
+    { name: "Silvanna",     role: "Combatiente" },
+    { name: "Sora",         role: "Asesino" },
+    { name: "Sun",          role: "Combatiente" },
+    { name: "Suyou",        role: "Asesino" },
+    { name: "Terizla",      role: "Combatiente" },
+    { name: "Thamuz",       role: "Combatiente" },
+    { name: "Tigreal",      role: "Tank" },
+    { name: "Uranus",       role: "Tank" },
+    { name: "Vale",         role: "Mago" },
+    { name: "Valentina",    role: "Mago" },
+    { name: "Valir",        role: "Mago" },
+    { name: "Vexana",       role: "Mago" },
+    { name: "Wanwan",       role: "Tirador" },
+    { name: "X.Borg",       role: "Combatiente" },
+    { name: "Xavier",       role: "Mago" },
+    { name: "Yi Sun-Shin",  role: "Tirador" },
+    { name: "Yin",          role: "Combatiente" },
+    { name: "Yu Zhong",     role: "Combatiente" },
+    { name: "Yve",          role: "Mago" },
+    { name: "Zetian",       role: "Mago" },
+    { name: "Zilong",       role: "Combatiente" },
+    { name: "Zhask",        role: "Mago" },
+    { name: "Zhuxin",       role: "Mago" },
+  ];
+
+  const challenges = [
+    "¡Solo puedes usar ataques básicos, CERO habilidades!",
+    "¡Solo puedes usar habilidades, CERO ataques básicos!",
+    "Cada vez que mates al rival debes esperar 5 segundos sin moverte antes de atacar",
+    "¡Debes anunciar en el chat qué habilidad vas a usar ANTES de usarla!",
+    "Juega con el teléfono o pantalla al revés 🙃",
+    "No puedes retroceder, solo moverte hacia adelante",
+    "Debes escribir 'EZ' en el chat después de cada kill",
+    "¡Tienes que gritar el nombre de tu héroe cada vez que hagas kill!",
+    "No puedes mirar el minimapa, tápalo con un dedo",
+    "Solo puedes comprar los ítems más caros del juego",
+    "Debes hacer 5 sentadillas cada vez que mueras 💀",
+    "¡Tienes prohibido usar el ultimate durante el primer minuto!",
+    "Debes jugar con los ojos cerrados durante 5 segundos al inicio de cada pelea",
+    "Cada vez que uses una habilidad debes decir su nombre en voz alta",
+    "¡Ambos jugadores solo pueden usar su habilidad 1!",
+    "Debes comer algo picante si pierdes una vida 🌶️",
+    "Juega usando solo el pulgar de la mano no dominante",
+    "¡Debes saludar al rival en el chat antes de cada pelea!",
+    "Solo puedes atacar cuando el rival te ataque primero",
+    "¡Debes usar el spell de retroceso (si lo tienes) en cada teamfight!",
+    "Tienes que gritar '¡BOOM!' cada vez que uses tu ultimate",
+    "Debes bailar (gira en círculos) durante 3 segundos después de cada kill",
+    "¡No puedes usar ningún ítem defensivo! Solo daño puro",
+    "Ambos jugadores deben llevar el spell Flicker obligatorio",
+    "¡Debes escribir el nombre de tu héroe antes de cada ultimate!",
+    "Solo puedes atacar moviéndote en zigzag, nunca en línea recta",
+    "¡Tienes que reírte en voz alta cada vez que esquives un ataque!",
+    "Debes pedir permiso en el chat antes de usar tu ultimate",
+    "¡Sin boots! No puedes comprar ningún ítem de velocidad de movimiento",
+    "Cada habilidad que falles te cuesta 5 flexiones 💪",
+    "Debes mirar al techo durante 2 segundos después de cada kill",
+    "¡Solo puedes atacar de espaldas al rival!",
+    "Ambos jugadores deben hacer un torneíto de piedra papel tijera antes de cada ronda",
+    "Tienes que describirle al rival lo que vas a hacer ANTES de hacerlo",
+    "¡El que llore primero pierde automáticamente! Cara seria obligatoria 😐",
+    "Debes decir 'Lo siento' en el chat cada vez que mates al rival",
+    "¡No puedes usar items activos durante la pelea!",
+    "Después de cada kill debes esperar a que el rival llegue a mitad del mapa antes de atacar",
+    "¡Debes construir un build totalmente random, sin pensar!",
+    "Tienes que tararear tu canción favorita mientras juegas 🎵",
+  ];
+
+  // ────────────────────────────────────────────────────────────────
+  // STATE
+  // ────────────────────────────────────────────────────────────────
+  let spinning = false;
+  let history = [];
+  let round = 0;
+  let lastH1 = null, lastH2 = null, lastCh = null;
+
+  // ────────────────────────────────────────────────────────────────
+  // HELPERS
+  // ────────────────────────────────────────────────────────────────
+  function rand(arr, exclude = null) {
+    let r;
+    do { r = arr[Math.floor(Math.random() * arr.length)]; } while (arr.length > 1 && r === exclude);
+    return r;
+  }
+
+  function randHero(excludeName = null) {
+    let h;
+    do { h = heroes[Math.floor(Math.random() * heroes.length)]; } while (h.name === excludeName);
+    return h;
+  }
+
+  function buildHeroItem(hero, player) {
+    const nameClass = player === 1 ? 'p1-name' : 'p2-name';
+    return `<div class="slot-item">
+      <div class="hero-role-badge role-${hero.role}">${hero.role}</div>
+      <div class="hero-name ${nameClass}">${hero.name}</div>
+    </div>`;
+  }
+
+  function buildChallengeItem(text) {
+    return `<div class="challenge-item"><div class="challenge-text">${text}</div></div>`;
+  }
+
+  // ────────────────────────────────────────────────────────────────
+  // SLOT ANIMATION
+  // ────────────────────────────────────────────────────────────────
+  function animateSlot(tapeId, buildItem, getItems, finalItem, duration, callback) {
+    const tape = document.getElementById(tapeId);
+    const ITEM_H = tapeId === 'tapeCh' ? 100 : 130;
+    const items = getItems();
+    const allItems = [...items, finalItem];
+    const totalItems = allItems.length;
+
+    // Build tape
+    tape.innerHTML = allItems.map(buildItem).join('');
+    tape.style.transition = 'none';
+    tape.style.transform = `translateY(0px)`;
+
+    let currentIndex = 0;
+    const totalScroll = (totalItems - 1) * ITEM_H;
+
+    // Ease out scroll
+    const startTime = performance.now();
+
+    function tick(now) {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      // Ease out cubic
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const y = -eased * totalScroll;
+
+      tape.style.transform = `translateY(${y}px)`;
+
+      if (progress < 1) {
+        requestAnimationFrame(tick);
+      } else {
+        tape.style.transform = `translateY(-${totalScroll}px)`;
+        if (callback) callback();
+      }
+    }
+
+    requestAnimationFrame(tick);
+  }
+
+  // ────────────────────────────────────────────────────────────────
+  // MAIN SPIN
+  // ────────────────────────────────────────────────────────────────
+  function spinAll() {
+    if (spinning) return;
+    spinning = true;
+    document.getElementById('btnSpin').disabled = true;
+    document.getElementById('resultCard').classList.remove('visible');
+
+    const h1 = randHero(lastH1 ? lastH1.name : null);
+    const h2 = randHero(h1.name); // ensure different heroes
+    const ch = rand(challenges, lastCh);
+
+    // Build random scroll items (decoys)
+    function getHeroItems1() {
+      const decoys = [];
+      for (let i = 0; i < 18; i++) decoys.push(heroes[Math.floor(Math.random() * heroes.length)]);
+      return decoys.map(h => buildHeroItem(h, 1));
+    }
+    function getHeroItems2() {
+      const decoys = [];
+      for (let i = 0; i < 22; i++) decoys.push(heroes[Math.floor(Math.random() * heroes.length)]);
+      return decoys.map(h => buildHeroItem(h, 2));
+    }
+    function getChallengeItems() {
+      const decoys = [];
+      for (let i = 0; i < 20; i++) decoys.push(challenges[Math.floor(Math.random() * challenges.length)]);
+      return decoys.map(c => buildChallengeItem(c));
+    }
+
+    let done = 0;
+    function onDone() {
+      done++;
+      if (done === 3) finalize(h1, h2, ch);
+    }
+
+    animateSlot('tape1',
+      item => (typeof item === 'string' ? item : buildHeroItem(item, 1)),
+      () => { const d=[]; for(let i=0;i<18;i++) d.push(heroes[Math.floor(Math.random()*heroes.length)]); return d; },
+      h1,
+      2400,
+      onDone
+    );
+    // Patch tape1 - already built with strings, rebuild properly
+    (function() {
+      const tape = document.getElementById('tape1');
+      const ITEM_H = 130;
+      const decoys = [];
+      for(let i = 0; i < 18; i++) decoys.push(heroes[Math.floor(Math.random() * heroes.length)]);
+      const allItems = [...decoys, h1];
+      tape.innerHTML = allItems.map(h => buildHeroItem(h, 1)).join('');
+      tape.style.transform = 'translateY(0px)';
+      const totalScroll = (allItems.length - 1) * ITEM_H;
+      const dur = 2400;
+      const start = performance.now();
+      function tick1(now) {
+        const e = Math.min((now - start) / dur, 1);
+        const eased = 1 - Math.pow(1 - e, 3);
+        tape.style.transform = `translateY(${-eased * totalScroll}px)`;
+        if (e < 1) requestAnimationFrame(tick1);
+        else { tape.style.transform = `translateY(-${totalScroll}px)`; onDone(); }
+      }
+      requestAnimationFrame(tick1);
+    })();
+
+    (function() {
+      const tape = document.getElementById('tape2');
+      const ITEM_H = 130;
+      const decoys = [];
+      for(let i = 0; i < 22; i++) decoys.push(heroes[Math.floor(Math.random() * heroes.length)]);
+      const allItems = [...decoys, h2];
+      tape.innerHTML = allItems.map(h => buildHeroItem(h, 2)).join('');
+      tape.style.transform = 'translateY(0px)';
+      const totalScroll = (allItems.length - 1) * ITEM_H;
+      const dur = 2900;
+      const start = performance.now();
+      function tick2(now) {
+        const e = Math.min((now - start) / dur, 1);
+        const eased = 1 - Math.pow(1 - e, 3);
+        tape.style.transform = `translateY(${-eased * totalScroll}px)`;
+        if (e < 1) requestAnimationFrame(tick2);
+        else { tape.style.transform = `translateY(-${totalScroll}px)`; onDone(); }
+      }
+      requestAnimationFrame(tick2);
+    })();
+
+    (function() {
+      const tape = document.getElementById('tapeCh');
+      const ITEM_H = 100;
+      const decoys = [];
+      for(let i = 0; i < 20; i++) decoys.push(challenges[Math.floor(Math.random() * challenges.length)]);
+      const allItems = [...decoys, ch];
+      tape.innerHTML = allItems.map(c => buildChallengeItem(c)).join('');
+      tape.style.transform = 'translateY(0px)';
+      const totalScroll = (allItems.length - 1) * ITEM_H;
+      const dur = 3400;
+      const start = performance.now();
+      function tick3(now) {
+        const e = Math.min((now - start) / dur, 1);
+        const eased = 1 - Math.pow(1 - e, 3);
+        tape.style.transform = `translateY(${-eased * totalScroll}px)`;
+        if (e < 1) requestAnimationFrame(tick3);
+        else { tape.style.transform = `translateY(-${totalScroll}px)`; onDone(); }
+      }
+      requestAnimationFrame(tick3);
+    })();
+
+    // We called onDone from tape1 manually above, so reset done count
+    done = -2; // Will be called 3 times from the 3 functions above
+  }
+
+  function finalize(h1, h2, ch) {
+    lastH1 = h1; lastH2 = h2; lastCh = ch;
+    round++;
+
+    const p1name = document.getElementById('p1name').value || 'Jugador 1';
+    const p2name = document.getElementById('p2name').value || 'Jugador 2';
+
+    // Show result card
+    const rc = document.getElementById('resultCard');
+    document.getElementById('rp1label').textContent = p1name.toUpperCase();
+    document.getElementById('rp2label').textContent = p2name.toUpperCase();
+    document.getElementById('rp1hero').textContent = h1.name;
+    document.getElementById('rp1role').textContent = h1.role;
+    document.getElementById('rp2hero').textContent = h2.name;
+    document.getElementById('rp2role').textContent = h2.role;
+    document.getElementById('rcText').textContent = ch;
+    rc.classList.add('visible');
+
+    // History
+    history.unshift({ round, p1: { name: p1name, hero: h1 }, p2: { name: p2name, hero: h2 }, ch });
+    renderHistory();
+
+    spinning = false;
+    document.getElementById('btnSpin').disabled = false;
+  }
+
+  function renderHistory() {
+    const hs = document.getElementById('historySection');
+    const hl = document.getElementById('historyList');
+    if (history.length === 0) { hs.classList.remove('visible'); return; }
+    hs.classList.add('visible');
+    hl.innerHTML = history.map(e => `
+      <div class="history-item">
+        <span class="hi-round">R${e.round}</span>
+        <span class="hi-p1">${e.p1.hero.name}</span>
+        <span class="hi-p2">${e.p2.hero.name}</span>
+        <span class="hi-ch">${e.ch.length > 50 ? e.ch.slice(0, 50) + '…' : e.ch}</span>
+      </div>
+    `).join('');
+  }
+
+  function clearHistory() {
+    history = [];
+    round = 0;
+    renderHistory();
+  }
+</script>
+</body>
+</html>
