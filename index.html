@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Hogar y Muebles</title>
 
-  <!-- Fonts: Cormorant Garamond (display) + DM Sans (body) -->
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
@@ -22,18 +21,14 @@
       --moss:        #7a8c6e;
       --text:        #2a1f18;
       --text-muted:  #8a7a70;
-
       --font-display: 'Cormorant Garamond', Georgia, serif;
       --font-body:    'DM Sans', sans-serif;
-
       --transition: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
 
     /* ─── Reset & Base ──────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     html { scroll-behavior: smooth; }
-
     body {
       font-family: var(--font-body);
       background: var(--warm-white);
@@ -42,7 +37,6 @@
       line-height: 1.7;
       overflow-x: hidden;
     }
-
     img { display: block; width: 100%; object-fit: cover; }
     a { text-decoration: none; color: inherit; }
 
@@ -66,39 +60,11 @@
       color: var(--espresso);
     }
 
-    /* ─── Placeholder image block ───────────────────────────── */
-    .img-placeholder {
-      width: 100%;
-      background: var(--sand);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      color: var(--text-muted);
-      font-size: 0.78rem;
-      font-weight: 500;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      border: 1.5px dashed var(--caramel);
-      position: relative;
-    }
-    .img-placeholder::before {
-      content: '📷';
-      font-size: 1.8rem;
-      opacity: 0.55;
-    }
-    .img-placeholder span {
-      text-align: center;
-      padding: 0 1rem;
-      line-height: 1.5;
-    }
-
     /* ─── Navbar ────────────────────────────────────────────── */
     nav {
       position: fixed; top: 0; left: 0; right: 0;
       z-index: 100;
-      padding: 1.4rem 2rem;
+      padding: 0.8rem 2rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -108,14 +74,12 @@
       transition: var(--transition);
     }
 
-    .nav-logo {
-      font-family: var(--font-display);
-      font-size: 1.55rem;
-      font-weight: 400;
-      color: var(--espresso);
-      letter-spacing: 0.02em;
+    .nav-logo img {
+      height: 52px;
+      width: auto;
+      object-fit: contain;
+      display: block;
     }
-    .nav-logo span { color: var(--caramel); font-style: italic; }
 
     .nav-links {
       display: flex;
@@ -145,7 +109,6 @@
     }
     .nav-cta:hover { background: var(--bark); }
 
-    /* Mobile hamburger */
     .hamburger {
       display: none;
       flex-direction: column;
@@ -164,7 +127,7 @@
       min-height: 100vh;
       display: grid;
       grid-template-columns: 1fr 1fr;
-      padding-top: 80px;
+      padding-top: 72px; /* altura real del navbar con logo */
     }
 
     .hero-content {
@@ -195,10 +158,7 @@
       color: var(--espresso);
       margin-bottom: 1.5rem;
     }
-    .hero-title em {
-      font-style: italic;
-      color: var(--caramel);
-    }
+    .hero-title em { font-style: italic; color: var(--caramel); }
 
     .hero-desc {
       font-size: 1rem;
@@ -208,11 +168,7 @@
       line-height: 1.8;
     }
 
-    .hero-actions {
-      display: flex;
-      gap: 1rem;
-      align-items: center;
-    }
+    .hero-actions { display: flex; gap: 1rem; align-items: center; }
 
     .btn-primary {
       padding: 0.9rem 2.2rem;
@@ -244,11 +200,8 @@
     }
     .btn-outline:hover { background: var(--espresso); color: var(--cream); }
 
-    .hero-image {
-      position: relative;
-      overflow: hidden;
-    }
-    .hero-image .img-placeholder { height: 100%; min-height: 550px; border: none; }
+    .hero-image { position: relative; overflow: hidden; }
+    .hero-image img { height: 100%; min-height: 550px; object-fit: cover; }
 
     .hero-badge {
       position: absolute;
@@ -272,11 +225,8 @@
       text-transform: uppercase;
     }
 
-    /* ─── Strip / Stats ─────────────────────────────────────── */
-    .stats-strip {
-      background: var(--espresso);
-      padding: 2rem 0;
-    }
+    /* ─── Stats Strip ───────────────────────────────────────── */
+    .stats-strip { background: var(--espresso); padding: 2rem 0; }
     .stats-inner {
       display: flex;
       justify-content: space-around;
@@ -284,9 +234,7 @@
       flex-wrap: wrap;
       gap: 1.5rem;
     }
-    .stat-item {
-      text-align: center;
-    }
+    .stat-item { text-align: center; }
     .stat-item strong {
       display: block;
       font-family: var(--font-display);
@@ -302,96 +250,23 @@
       opacity: 0.75;
     }
 
-    /* ─── Categories ────────────────────────────────────────── */
-    .categories {
-      padding: 6rem 0;
-      background: var(--warm-white);
-    }
-    .categories-header {
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      margin-bottom: 3rem;
-      gap: 2rem;
-      flex-wrap: wrap;
-    }
-    .categories-header .section-title { max-width: 450px; }
-    .view-all {
-      font-size: 0.78rem;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--caramel);
-      border-bottom: 1px solid var(--caramel);
-      padding-bottom: 2px;
-      white-space: nowrap;
-      transition: opacity 0.2s;
-    }
-    .view-all:hover { opacity: 0.7; }
-
-    .categories-grid {
-      display: grid;
-      grid-template-columns: 2fr 1fr 1fr;
-      grid-template-rows: auto auto;
-      gap: 1rem;
-    }
-
-    .cat-card {
-      position: relative;
-      overflow: hidden;
-      cursor: pointer;
-      border-radius: 3px;
-    }
-    .cat-card .img-placeholder { min-height: 260px; border: none; }
-    .cat-card:first-child .img-placeholder { min-height: 540px; }
-
-    .cat-label {
-      position: absolute;
-      bottom: 1.5rem; left: 1.5rem;
-      background: rgba(250, 248, 244, 0.93);
-      padding: 0.6rem 1rem;
-      backdrop-filter: blur(4px);
-    }
-    .cat-label h3 {
-      font-family: var(--font-display);
-      font-size: 1.1rem;
-      font-weight: 400;
-      color: var(--espresso);
-    }
-    .cat-label span {
-      font-size: 0.72rem;
-      color: var(--caramel);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-    }
-
-    .cat-card:first-child { grid-row: 1 / 3; }
-    .cat-card:nth-child(2) { grid-column: 2; grid-row: 1; }
-    .cat-card:nth-child(3) { grid-column: 3; grid-row: 1; }
-    .cat-card:nth-child(4) { grid-column: 2; grid-row: 2; }
-    .cat-card:nth-child(5) { grid-column: 3; grid-row: 2; }
-
-    /* ─── Featured Products ─────────────────────────────────── */
-    .products {
-      padding: 6rem 0;
-      background: var(--cream);
-    }
-    .products-header {
-      text-align: center;
-      margin-bottom: 3.5rem;
-    }
+    /* ─── Products ──────────────────────────────────────────── */
+    .products { padding: 6rem 0; background: var(--cream); }
+    .products-header { text-align: center; margin-bottom: 3.5rem; }
     .products-header .section-label { margin-bottom: 0.8rem; display: block; }
     .products-header .section-title { margin-bottom: 1rem; }
-    .products-header p {
-      color: var(--text-muted);
-      max-width: 480px;
-      margin: 0 auto;
-    }
+    .products-header p { color: var(--text-muted); max-width: 480px; margin: 0 auto; }
 
+    /* 3 columnas en escritorio, 5 tarjetas: fila 1 con 3, fila 2 con 2 centradas */
     .products-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(3, 1fr);
       gap: 1.5rem;
     }
+    /* Las últimas 2 tarjetas se ubican en columnas 1 y 2 para quedar centradas
+       (la columna 3 queda vacía visualmente a la derecha) */
+    .products-grid .product-card:nth-child(4) { grid-column: 1; }
+    .products-grid .product-card:nth-child(5) { grid-column: 2; }
 
     .product-card {
       background: var(--warm-white);
@@ -405,24 +280,28 @@
     }
 
     .product-img { position: relative; }
-    .product-img .img-placeholder { min-height: 260px; border: none; }
+    .product-img img { height: 260px; object-fit: cover; width: 100%; }
 
-    .product-badge-new {
-      position: absolute;
-      top: 1rem; left: 1rem;
-      background: var(--moss);
-      color: white;
-      font-size: 0.65rem;
+    /* Placeholder visible cuando falta la imagen */
+    .product-img .img-placeholder {
+      height: 260px;
+      width: 100%;
+      background: var(--sand);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      color: var(--text-muted);
+      font-size: 0.78rem;
       font-weight: 500;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      padding: 0.3rem 0.7rem;
-      border-radius: 2px;
+      border: 1.5px dashed var(--caramel);
     }
+    .product-img .img-placeholder::before { content: '📷'; font-size: 1.8rem; opacity: 0.55; }
 
-    .product-info {
-      padding: 1.2rem 1.3rem 1.5rem;
-    }
+    .product-info { padding: 1.2rem 1.3rem 1.5rem; }
     .product-info .cat {
       font-size: 0.7rem;
       letter-spacing: 0.15em;
@@ -444,22 +323,11 @@
       margin-bottom: 1rem;
       line-height: 1.6;
     }
-    .product-footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
+    .product-footer { display: flex; align-items: center; justify-content: space-between; }
     .product-price {
-      font-family: var(--font-display);
-      font-size: 1.2rem;
-      font-weight: 600;
-      color: var(--espresso);
-    }
-    /* ── PLACEHOLDER PRICE: reemplazar con precio real ── */
-    .product-price.placeholder-price {
+      font-size: 0.88rem;
       color: var(--text-muted);
       font-style: italic;
-      font-size: 0.88rem;
       font-family: var(--font-body);
       font-weight: 300;
     }
@@ -476,40 +344,22 @@
     }
     .btn-buy:hover { background: var(--caramel); }
 
-    /* ─── About / Historia ──────────────────────────────────── */
-    .about {
-      padding: 7rem 0;
-      background: var(--warm-white);
-    }
+    /* ─── About / Nosotros ──────────────────────────────────── */
+    .about { padding: 7rem 0; background: var(--warm-white); }
     .about-inner {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 5rem;
       align-items: center;
     }
-    .about-images {
-      position: relative;
-      height: 520px;
-    }
-    .about-img-main .img-placeholder {
-      height: 420px;
+
+    .about-img-main img {
+      height: 480px;
+      object-fit: cover;
       border-radius: 3px;
-      border: none;
+      width: 100%;
     }
-    .about-img-accent {
-      position: absolute;
-      bottom: 0; right: -20px;
-      width: 55%;
-      border: 5px solid var(--warm-white);
-      border-radius: 3px;
-      overflow: hidden;
-      box-shadow: 0 12px 40px rgba(61,43,31,0.15);
-    }
-    .about-img-accent .img-placeholder {
-      height: 200px;
-      border: none;
-    }
-    .about-content {}
+
     .about-content .section-label { margin-bottom: 1rem; display: block; }
     .about-content .section-title { margin-bottom: 1.5rem; }
     .about-content p {
@@ -517,6 +367,7 @@
       margin-bottom: 1.2rem;
       font-size: 0.97rem;
     }
+
     .about-values {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -536,71 +387,10 @@
       color: var(--espresso);
       margin-bottom: 0.3rem;
     }
-    .value-item span {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-    }
-
-    /* ─── Testimonial Strip ─────────────────────────────────── */
-    .testimonials {
-      background: var(--espresso);
-      padding: 5rem 0;
-    }
-    .testimonials-header {
-      text-align: center;
-      margin-bottom: 3rem;
-    }
-    .testimonials-header .section-label { color: var(--caramel); margin-bottom: 0.8rem; display: block; }
-    .testimonials-header .section-title { color: var(--cream); }
-
-    .testimonials-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1.5rem;
-    }
-    .testimonial-card {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(192,154,107,0.2);
-      padding: 2rem;
-      border-radius: 3px;
-    }
-    .stars { color: var(--caramel); margin-bottom: 1rem; font-size: 1.1rem; letter-spacing: 0.1em; }
-    .testimonial-card p {
-      color: rgba(245,240,232,0.8);
-      font-style: italic;
-      font-size: 0.92rem;
-      line-height: 1.75;
-      margin-bottom: 1.2rem;
-    }
-    .testimonial-author {
-      display: flex;
-      align-items: center;
-      gap: 0.8rem;
-    }
-    .author-avatar .img-placeholder {
-      width: 40px; height: 40px;
-      border-radius: 50%;
-      border: 1px dashed var(--caramel);
-      font-size: 0.5rem;
-      min-height: unset;
-    }
-    .author-avatar .img-placeholder::before { display: none; }
-    .author-info strong {
-      display: block;
-      font-size: 0.85rem;
-      color: var(--cream);
-    }
-    .author-info span {
-      font-size: 0.72rem;
-      color: var(--caramel);
-      letter-spacing: 0.08em;
-    }
+    .value-item span { font-size: 0.8rem; color: var(--text-muted); }
 
     /* ─── Contact ───────────────────────────────────────────── */
-    .contact {
-      padding: 6rem 0;
-      background: var(--cream);
-    }
+    .contact { padding: 6rem 0; background: var(--cream); }
     .contact-inner {
       display: grid;
       grid-template-columns: 1fr 1.2fr;
@@ -609,17 +399,10 @@
     }
     .contact-info .section-label { margin-bottom: 1rem; display: block; }
     .contact-info .section-title { margin-bottom: 1.2rem; }
-    .contact-info > p {
-      color: var(--text-muted);
-      margin-bottom: 2rem;
-    }
+    .contact-info > p { color: var(--text-muted); margin-bottom: 2rem; }
 
     .contact-details { display: flex; flex-direction: column; gap: 1.2rem; }
-    .contact-item {
-      display: flex;
-      gap: 1rem;
-      align-items: flex-start;
-    }
+    .contact-item { display: flex; gap: 1rem; align-items: flex-start; }
     .contact-icon {
       width: 42px; height: 42px;
       background: var(--espresso);
@@ -636,22 +419,12 @@
       color: var(--caramel);
       margin-bottom: 0.2rem;
     }
-    /* ── PLACEHOLDER CONTACT: reemplazar con datos reales ── */
     .contact-text span {
       font-size: 0.92rem;
-      color: var(--text-muted);
-      font-style: italic;
-    }
-    .contact-text span.real {
-      font-style: normal;
       color: var(--text);
     }
 
-    .social-links {
-      display: flex;
-      gap: 0.8rem;
-      margin-top: 2rem;
-    }
+    .social-links { display: flex; gap: 0.8rem; margin-top: 2rem; }
     .social-btn {
       width: 40px; height: 40px;
       border: 1.5px solid var(--caramel);
@@ -664,7 +437,7 @@
     }
     .social-btn:hover { background: var(--caramel); color: white; }
 
-    /* Contact Form */
+    /* Formulario */
     .contact-form { display: flex; flex-direction: column; gap: 1.1rem; }
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
     .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
@@ -691,9 +464,7 @@
     }
     .form-group input:focus,
     .form-group textarea:focus,
-    .form-group select:focus {
-      border-color: var(--caramel);
-    }
+    .form-group select:focus { border-color: var(--caramel); }
     .form-group textarea { resize: vertical; min-height: 110px; }
     .form-submit {
       padding: 1rem 2.5rem;
@@ -712,46 +483,14 @@
     }
     .form-submit:hover { background: var(--bark); }
 
-    /* ─── Map placeholder ───────────────────────────────────── */
-    .map-section {
-      height: 380px;
-      background: var(--sand);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      gap: 0.6rem;
-      color: var(--text-muted);
-      border-top: 1px solid rgba(192,154,107,0.2);
-      position: relative;
-      overflow: hidden;
-    }
-    .map-section::before {
-      content: '📍';
-      font-size: 2.5rem;
-    }
-    .map-section p {
-      font-size: 0.8rem;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-    }
-    .map-section small {
-      font-size: 0.72rem;
-      color: var(--caramel);
-    }
-
     /* ─── Footer ────────────────────────────────────────────── */
-    footer {
-      background: var(--espresso);
-      padding: 4rem 0 2rem;
-    }
+    footer { background: var(--espresso); padding: 4rem 0 2rem; }
     .footer-grid {
       display: grid;
       grid-template-columns: 2fr 1fr 1fr 1fr;
       gap: 3rem;
       margin-bottom: 3rem;
     }
-    .footer-brand {}
     .footer-logo {
       font-family: var(--font-display);
       font-size: 1.6rem;
@@ -760,11 +499,7 @@
       margin-bottom: 1rem;
     }
     .footer-logo span { color: var(--caramel); font-style: italic; }
-    .footer-brand p {
-      color: rgba(245,240,232,0.55);
-      font-size: 0.88rem;
-      line-height: 1.75;
-    }
+    .footer-brand p { color: rgba(245,240,232,0.55); font-size: 0.88rem; line-height: 1.75; }
     .footer-col h4 {
       font-size: 0.72rem;
       letter-spacing: 0.2em;
@@ -773,13 +508,8 @@
       margin-bottom: 1.2rem;
     }
     .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.7rem; }
-    .footer-col ul a {
-      font-size: 0.85rem;
-      color: rgba(245,240,232,0.6);
-      transition: color 0.2s;
-    }
+    .footer-col ul a { font-size: 0.85rem; color: rgba(245,240,232,0.6); transition: color 0.2s; }
     .footer-col ul a:hover { color: var(--caramel); }
-
     .footer-bottom {
       display: flex;
       align-items: center;
@@ -789,10 +519,7 @@
       flex-wrap: wrap;
       gap: 1rem;
     }
-    .footer-bottom p {
-      font-size: 0.78rem;
-      color: rgba(245,240,232,0.4);
-    }
+    .footer-bottom p { font-size: 0.78rem; color: rgba(245,240,232,0.4); }
 
     /* ─── Scroll animations ─────────────────────────────────── */
     .reveal {
@@ -800,18 +527,19 @@
       transform: translateY(28px);
       transition: opacity 0.7s ease, transform 0.7s ease;
     }
-    .reveal.visible {
-      opacity: 1;
-      transform: none;
-    }
+    .reveal.visible { opacity: 1; transform: none; }
     .reveal-delay-1 { transition-delay: 0.1s; }
     .reveal-delay-2 { transition-delay: 0.2s; }
     .reveal-delay-3 { transition-delay: 0.3s; }
-    .reveal-delay-4 { transition-delay: 0.4s; }
 
     /* ─── Responsive ────────────────────────────────────────── */
     @media (max-width: 1024px) {
-      .products-grid { grid-template-columns: repeat(2, 1fr); }
+      .products-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      /* En tablet las 5 tarjetas fluyen normalmente, sin posicionamiento manual */
+      .products-grid .product-card:nth-child(4),
+      .products-grid .product-card:nth-child(5) { grid-column: unset; }
       .footer-grid { grid-template-columns: 1fr 1fr; }
     }
 
@@ -823,33 +551,29 @@
       .hero-content { padding: 3rem 2rem; }
       .hero-image { display: none; }
 
-      .categories-grid {
-        grid-template-columns: 1fr 1fr;
-        grid-template-rows: unset;
-      }
-      .cat-card:first-child { grid-column: 1 / 3; grid-row: 1; }
-      .cat-card:nth-child(n) { grid-column: unset; grid-row: unset; }
-
       .about-inner { grid-template-columns: 1fr; }
-      .about-images { height: 350px; }
+      .about-img-main img { height: 300px; }
 
       .contact-inner { grid-template-columns: 1fr; }
       .form-row { grid-template-columns: 1fr; }
 
-      .testimonials-grid { grid-template-columns: 1fr; }
-
       .footer-grid { grid-template-columns: 1fr; gap: 2rem; }
+
+      .products-grid { grid-template-columns: 1fr; }
+      .products-grid .product-card:nth-child(4),
+      .products-grid .product-card:nth-child(5) { grid-column: unset; }
     }
   </style>
 </head>
 <body>
 
-  <!-- ═══ NAVBAR ═══════════════════════════════════════════════ -->
+  <!-- ═══ NAVBAR ════════════════════════════════════════════════ -->
   <nav id="navbar">
-    <a href="#" class="nav-logo">Hogar <span>&</span> Muebles</a>
+    <a href="#" class="nav-logo">
+      <img src="images/logo.jpeg" alt="Hogar y Muebles">
+    </a>
     <ul class="nav-links">
-      <li><a href="#categorias">Catálogo</a></li>
-      <li><a href="#productos">Productos</a></li>
+      <li><a href="#productos">Catálogo</a></li>
       <li><a href="#nosotros">Nosotros</a></li>
       <li><a href="#contacto">Contacto</a></li>
     </ul>
@@ -881,17 +605,8 @@
     </div>
 
     <div class="hero-image">
-      <!-- 
-        ════════════════════════════════════════════════
-        📷 FOTO HERO PRINCIPAL
-        Reemplazá este bloque con:
-        <img src="ruta/a/tu-foto.jpg" alt="Foto principal del showroom" style="height:100%;object-fit:cover;">
-        Tamaño recomendado: 800×1000px o superior
-        ════════════════════════════════════════════════
-      -->
-      <div class="img-placeholder" style="height:100%">
-        <span>📷 FOTO PRINCIPAL DEL SHOWROOM<br><small>Reemplazar con imagen — 800×1000px recomendado</small></span>
-      </div>
+      <!-- Interior.jpeg — capital I, como está en GitHub -->
+      <img src="images/Interior.jpeg" alt="Interior del showroom Hogar y Muebles">
       <div class="hero-badge">
         <strong>+200</strong>
         <span>Productos disponibles</span>
@@ -923,83 +638,6 @@
       </div>
     </div>
   </div>
-  <!-- 
-    NOTA: Podés cambiar los números arriba por los reales de tu negocio.
-  -->
-
-
-  <!-- ═══ CATEGORÍAS ═════════════════════════════════════════════ -->
-  <section class="categories" id="categorias">
-    <div class="container">
-      <div class="categories-header reveal">
-        <div>
-          <span class="section-label">Lo que ofrecemos</span>
-          <h2 class="section-title">Explorá<br>nuestras categorías</h2>
-        </div>
-        <a href="#" class="view-all">Ver todo el catálogo →</a>
-      </div>
-
-      <div class="categories-grid">
-
-        <!-- Categoría 1 — GRANDE (izquierda) -->
-        <div class="cat-card reveal">
-          <!-- 📷 Reemplazar con <img src="..." alt="Living"> -->
-          <div class="img-placeholder" style="height:540px">
-            <span>📷 FOTO CATEGORÍA LIVING<br><small>Tamaño recomendado: 500×600px</small></span>
-          </div>
-          <div class="cat-label">
-            <span>Categoría destacada</span>
-            <h3>Living & Sala</h3>
-          </div>
-        </div>
-
-        <!-- Categoría 2 -->
-        <div class="cat-card reveal reveal-delay-1">
-          <div class="img-placeholder" style="height:260px">
-            <span>📷 FOTO DORMITORIOS<br><small>350×280px</small></span>
-          </div>
-          <div class="cat-label">
-            <span>Descanso</span>
-            <h3>Dormitorios</h3>
-          </div>
-        </div>
-
-        <!-- Categoría 3 -->
-        <div class="cat-card reveal reveal-delay-2">
-          <div class="img-placeholder" style="height:260px">
-            <span>📷 FOTO COMEDOR<br><small>350×280px</small></span>
-          </div>
-          <div class="cat-label">
-            <span>Reuniones</span>
-            <h3>Comedor</h3>
-          </div>
-        </div>
-
-        <!-- Categoría 4 -->
-        <div class="cat-card reveal reveal-delay-1">
-          <div class="img-placeholder" style="height:260px">
-            <span>📷 FOTO OFICINA<br><small>350×280px</small></span>
-          </div>
-          <div class="cat-label">
-            <span>Productividad</span>
-            <h3>Oficina & Estudio</h3>
-          </div>
-        </div>
-
-        <!-- Categoría 5 -->
-        <div class="cat-card reveal reveal-delay-2">
-          <div class="img-placeholder" style="height:260px">
-            <span>📷 FOTO EXTERIOR<br><small>350×280px</small></span>
-          </div>
-          <div class="cat-label">
-            <span>Al aire libre</span>
-            <h3>Exterior & Jardín</h3>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </section>
 
 
   <!-- ═══ PRODUCTOS DESTACADOS ══════════════════════════════════ -->
@@ -1013,84 +651,87 @@
 
       <div class="products-grid">
 
-        <!-- Producto 1 -->
+        <!-- 1. Placar -->
         <div class="product-card reveal">
           <div class="product-img">
-            <!-- 📷 Reemplazar con <img src="..." alt="Nombre del producto"> -->
-            <div class="img-placeholder" style="height:260px">
-              <span>📷 FOTO PRODUCTO 1<br><small>400×300px</small></span>
-            </div>
-            <span class="product-badge-new">Nuevo</span>
-          </div>
-          <div class="product-info">
-            <span class="cat">Living</span>
-            <!-- ✏️ Reemplazar con nombre real -->
-            <h3>Sillón modelo ejemplo</h3>
-            <!-- ✏️ Reemplazar con descripción real -->
-            <p>Breve descripción del producto. Material, dimensiones, color.</p>
-            <div class="product-footer">
-              <!-- ✏️ Reemplazar con precio real o "Consultar precio" -->
-              <span class="product-price placeholder-price">Consultar precio</span>
-              <button class="btn-buy" onclick="window.location='#contacto'" title="Consultar">→</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Producto 2 -->
-        <div class="product-card reveal reveal-delay-1">
-          <div class="product-img">
-            <div class="img-placeholder" style="height:260px">
-              <span>📷 FOTO PRODUCTO 2<br><small>400×300px</small></span>
-            </div>
+            <img src="images/Placar 1.60x.2.20x0.53m.jpeg" alt="Placar 1.60×2.20×0.53m">
           </div>
           <div class="product-info">
             <span class="cat">Dormitorio</span>
-            <h3>Cama modelo ejemplo</h3>
-            <p>Breve descripción del producto. Material, dimensiones, color.</p>
+            <h3>Placar 1.60×2.20×0.53m</h3>
+            <p>Amplio espacio de guardado con diseño moderno. Ideal para dormitorios.</p>
             <div class="product-footer">
-              <span class="product-price placeholder-price">Consultar precio</span>
+              <span class="product-price">Consultar precio</span>
               <button class="btn-buy" onclick="window.location='#contacto'" title="Consultar">→</button>
             </div>
           </div>
         </div>
 
-        <!-- Producto 3 -->
+        <!-- 2. Frente placard — pendiente de subir a GitHub -->
+        <div class="product-card reveal reveal-delay-1">
+          <div class="product-img">
+            <img src="images/Frente placard 1.70x2.40m.jpeg" alt="Frente Placard 1.70×2.40m">
+          </div>
+          <div class="product-info">
+            <span class="cat">Dormitorio</span>
+            <h3>Frente Placard 1.70×2.40m</h3>
+            <p>Frente de placard de gran porte, elegante y funcional para cualquier ambiente.</p>
+            <div class="product-footer">
+              <span class="product-price">Consultar precio</span>
+              <button class="btn-buy" onclick="window.location='#contacto'" title="Consultar">→</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Chifoniers -->
         <div class="product-card reveal reveal-delay-2">
           <div class="product-img">
-            <div class="img-placeholder" style="height:260px">
-              <span>📷 FOTO PRODUCTO 3<br><small>400×300px</small></span>
+            <img src="images/Chifoniers.jpeg" alt="Chifoniers">
+          </div>
+          <div class="product-info">
+            <span class="cat">Dormitorio</span>
+            <h3>Chifoniers</h3>
+            <p>Cómodas y prácticas, perfectas para organizar el dormitorio con estilo.</p>
+            <div class="product-footer">
+              <span class="product-price">Consultar precio</span>
+              <button class="btn-buy" onclick="window.location='#contacto'" title="Consultar">→</button>
             </div>
+          </div>
+        </div>
+
+        <!-- 4. Juego de Comedor Tapizado -->
+        <div class="product-card reveal reveal-delay-1">
+          <div class="product-img">
+            <img src="images/Juego de Comedor Tapizado.jpeg" alt="Juego de Comedor Tapizado">
           </div>
           <div class="product-info">
             <span class="cat">Comedor</span>
-            <h3>Mesa modelo ejemplo</h3>
-            <p>Breve descripción del producto. Material, dimensiones, color.</p>
+            <h3>Juego de Comedor Tapizado</h3>
+            <p>Mesa y sillas tapizadas para transformar tu comedor en un espacio de reunión.</p>
             <div class="product-footer">
-              <span class="product-price placeholder-price">Consultar precio</span>
+              <span class="product-price">Consultar precio</span>
               <button class="btn-buy" onclick="window.location='#contacto'" title="Consultar">→</button>
             </div>
           </div>
         </div>
 
-        <!-- Producto 4 -->
-        <div class="product-card reveal reveal-delay-3">
+        <!-- 5. Modular Cristalero -->
+        <div class="product-card reveal reveal-delay-2">
           <div class="product-img">
-            <div class="img-placeholder" style="height:260px">
-              <span>📷 FOTO PRODUCTO 4<br><small>400×300px</small></span>
-            </div>
+            <img src="images/Modular Cristalero 1.20m.jpeg" alt="Modular Cristalero 1.20m">
           </div>
           <div class="product-info">
-            <span class="cat">Oficina</span>
-            <h3>Escritorio modelo</h3>
-            <p>Breve descripción del producto. Material, dimensiones, color.</p>
+            <span class="cat">Living</span>
+            <h3>Modular Cristalero 1.20m</h3>
+            <p>Modular con cristalero para exhibir con elegancia en el living o comedor.</p>
             <div class="product-footer">
-              <span class="product-price placeholder-price">Consultar precio</span>
+              <span class="product-price">Consultar precio</span>
               <button class="btn-buy" onclick="window.location='#contacto'" title="Consultar">→</button>
             </div>
           </div>
         </div>
 
-      </div><!-- /products-grid -->
+      </div>
     </div>
   </section>
 
@@ -1102,32 +743,22 @@
 
         <div class="about-images reveal">
           <div class="about-img-main">
-            <!-- 📷 Reemplazar con foto del local o equipo -->
-            <div class="img-placeholder" style="height:420px">
-              <span>📷 FOTO DEL LOCAL / EQUIPO<br><small>600×500px recomendado</small></span>
-            </div>
-          </div>
-          <div class="about-img-accent">
-            <!-- 📷 Reemplazar con foto secundaria (detalle de mueble o taller) -->
-            <div class="img-placeholder" style="height:200px">
-              <span>📷 DETALLE / TALLER<br><small>350×250px</small></span>
-            </div>
+            <!-- Interior.jpeg — misma foto que el hero, capital I -->
+            <img src="images/Interior.jpeg" alt="Interior del local Hogar y Muebles">
           </div>
         </div>
 
         <div class="about-content reveal reveal-delay-2">
           <span class="section-label">Nuestra historia</span>
-          <h2 class="section-title">Pasión por el<br>buen diseño</h2>
-          <!-- ✏️ Reemplazar con texto real de la empresa -->
+          <h2 class="section-title">¿Quiénes<br>somos?</h2>
           <p>
-            En <strong>Hogar y Muebles</strong> creemos que cada espacio cuenta una historia. 
-            Desde nuestros comienzos, nos dedicamos a ofrecer muebles de calidad que combinan 
-            estética y funcionalidad para hacer de tu hogar un lugar especial.
+            En <strong>Hogar y Muebles</strong> sabemos lo que significa crear un hogar desde cero —
+            o darle una nueva vida a tu espacio. Por eso trabajamos cada día para ofrecerte 
+            muebles de calidad, a precios accesibles y con la atención personalizada que merecés.
           </p>
           <p>
-            <!-- ✏️ Agregá acá información sobre años de experiencia, origen de la empresa, etc. -->
-            [Agregá aquí la historia de tu empresa: cuándo abrieron, qué los motiva, 
-            qué los diferencia de la competencia, etc.]
+            Desde el sillón donde vas a descansar hasta la mesa donde vas a compartir en familia —
+            acá encontrás todo. Somos tu mueblería de confianza en Posadas, Misiones.
           </p>
           <div class="about-values">
             <div class="value-item">
@@ -1154,67 +785,6 @@
   </section>
 
 
-  <!-- ═══ TESTIMONIOS ════════════════════════════════════════════ -->
-  <section class="testimonials">
-    <div class="container">
-      <div class="testimonials-header reveal">
-        <span class="section-label">Lo que dicen nuestros clientes</span>
-        <h2 class="section-title">Opiniones reales</h2>
-      </div>
-      <div class="testimonials-grid">
-
-        <!-- Testimonio 1 — ✏️ Reemplazar con real -->
-        <div class="testimonial-card reveal">
-          <div class="stars">★★★★★</div>
-          <p>"[Testimonio del cliente 1. Podés escribir una reseña real de un comprador satisfecho sobre su experiencia con los muebles o el servicio.]"</p>
-          <div class="testimonial-author">
-            <div class="author-avatar">
-              <div class="img-placeholder" style="width:40px;height:40px;border-radius:50%;min-height:unset;">
-                <span></span>
-              </div>
-            </div>
-            <div class="author-info">
-              <strong>[Nombre del cliente]</strong>
-              <span>[Ciudad · Mes Año]</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Testimonio 2 -->
-        <div class="testimonial-card reveal reveal-delay-1">
-          <div class="stars">★★★★★</div>
-          <p>"[Testimonio del cliente 2. Describí qué mueble compró y por qué lo recomendaría a otras personas.]"</p>
-          <div class="testimonial-author">
-            <div class="author-avatar">
-              <div class="img-placeholder" style="width:40px;height:40px;border-radius:50%;min-height:unset;"><span></span></div>
-            </div>
-            <div class="author-info">
-              <strong>[Nombre del cliente]</strong>
-              <span>[Ciudad · Mes Año]</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Testimonio 3 -->
-        <div class="testimonial-card reveal reveal-delay-2">
-          <div class="stars">★★★★★</div>
-          <p>"[Testimonio del cliente 3. Mencioná el producto, la atención recibida o el proceso de compra/entrega.]"</p>
-          <div class="testimonial-author">
-            <div class="author-avatar">
-              <div class="img-placeholder" style="width:40px;height:40px;border-radius:50%;min-height:unset;"><span></span></div>
-            </div>
-            <div class="author-info">
-              <strong>[Nombre del cliente]</strong>
-              <span>[Ciudad · Mes Año]</span>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-
   <!-- ═══ CONTACTO ══════════════════════════════════════════════ -->
   <section class="contact" id="contacto">
     <div class="container">
@@ -1231,7 +801,7 @@
               <div class="contact-icon">📍</div>
               <div class="contact-text">
                 <strong>Dirección</strong>
-                <span class="real">Av. Las Américas c/Irigoyen 3027</span>
+                <span>Av. Las Américas c/Irigoyen 3027</span>
               </div>
             </div>
 
@@ -1240,7 +810,7 @@
               <div class="contact-text">
                 <strong>Teléfono / WhatsApp</strong>
                 <a href="https://wa.me/5493764883868" target="_blank" rel="noopener" style="color:inherit;">
-                  <span class="real">+54 376 488-3868</span>
+                  <span>+54 376 488-3868</span>
                 </a>
               </div>
             </div>
@@ -1250,7 +820,7 @@
               <div class="contact-text">
                 <strong>Email</strong>
                 <a href="mailto:arielzu70@gmail.com" style="color:inherit;">
-                  <span class="real">arielzu70@gmail.com</span>
+                  <span>arielzu70@gmail.com</span>
                 </a>
               </div>
             </div>
@@ -1259,7 +829,7 @@
               <div class="contact-icon">🕐</div>
               <div class="contact-text">
                 <strong>Horario de atención</strong>
-                <span class="real">Lun–Vie: 8:30–12:00 · 16:00–20:30<br>Sábados: 9:00–11:45</span>
+                <span>Lun–Vie: 8:30–12:00 · 16:00–20:30<br>Sábados: 9:00–11:45</span>
               </div>
             </div>
 
@@ -1272,7 +842,7 @@
           </div>
         </div>
 
-        <!-- Formulario de contacto -->
+        <!-- Formulario -->
         <div class="contact-form reveal reveal-delay-2">
           <div class="form-row">
             <div class="form-group">
@@ -1313,12 +883,12 @@
 
 
   <!-- ═══ MAPA ═══════════════════════════════════════════════════ -->
-  <div class="map-section" style="display:block;padding:0;height:380px;">
+  <div style="display:block; padding:0; height:380px; border-top:1px solid rgba(192,154,107,0.2);">
     <iframe
       src="https://maps.google.com/maps?q=-27.464990,-55.856269&z=16&output=embed"
       width="100%"
       height="380"
-      style="border:0;display:block;"
+      style="border:0; display:block;"
       allowfullscreen=""
       loading="lazy"
       referrerpolicy="no-referrer-when-downgrade"
@@ -1343,11 +913,9 @@
         <div class="footer-col">
           <h4>Catálogo</h4>
           <ul>
-            <li><a href="#categorias">Living & Sala</a></li>
-            <li><a href="#categorias">Dormitorios</a></li>
-            <li><a href="#categorias">Comedor</a></li>
-            <li><a href="#categorias">Oficina</a></li>
-            <li><a href="#categorias">Exterior</a></li>
+            <li><a href="#productos">Dormitorios</a></li>
+            <li><a href="#productos">Comedor</a></li>
+            <li><a href="#productos">Living</a></li>
           </ul>
         </div>
 
@@ -1356,7 +924,6 @@
           <ul>
             <li><a href="#nosotros">Quiénes somos</a></li>
             <li><a href="#contacto">Contacto</a></li>
-            <!-- ✏️ Agregar más links si tenés (ej: política de garantía, envíos) -->
             <li><a href="#">Envíos y entregas</a></li>
             <li><a href="#">Garantía</a></li>
           </ul>
@@ -1368,7 +935,6 @@
             <li><a href="#">Facebook</a></li>
             <li><a href="https://www.instagram.com/hoga_rymuebles?utm_source=qr&igsh=MWtjYXRwbjRscDdnbQ==" target="_blank" rel="noopener">Instagram</a></li>
             <li><a href="https://wa.me/5493764883868" target="_blank" rel="noopener">WhatsApp</a></li>
-            <!-- ✏️ Reemplazar # con links reales -->
           </ul>
         </div>
 
@@ -1376,15 +942,14 @@
 
       <div class="footer-bottom">
         <p>© 2025 Hogar y Muebles. Todos los derechos reservados.</p>
-        <p>Diseño web por <em>tu nombre o agencia</em></p>
       </div>
     </div>
   </footer>
 
 
   <!-- ═══ JAVASCRIPT ════════════════════════════════════════════ -->
-  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-    /* ── Scroll reveal ──────────────────────────────────────── */
+  <script>
+    /* ── Scroll reveal ─────────────────────────────────────── */
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(e => {
         if (e.isIntersecting) {
@@ -1396,25 +961,25 @@
 
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-    /* ── Navbar scroll shadow ───────────────────────────────── */
+    /* ── Navbar sombra al hacer scroll ─────────────────────── */
     window.addEventListener('scroll', () => {
       document.getElementById('navbar').style.boxShadow =
         window.scrollY > 40 ? '0 4px 24px rgba(61,43,31,0.10)' : 'none';
     });
 
-    /* ── Mobile menu toggle ─────────────────────────────────── */
+    /* ── Menú mobile ───────────────────────────────────────── */
     function toggleMenu() {
       const links = document.querySelector('.nav-links');
       const cta   = document.querySelector('.nav-cta');
       if (!links) return;
       const isOpen = links.style.display === 'flex';
-      links.style.cssText = isOpen ? '' : 'display:flex;flex-direction:column;position:absolute;top:70px;left:0;right:0;background:var(--warm-white);padding:1.5rem 2rem;gap:1rem;border-bottom:1px solid var(--sand);z-index:99';
+      links.style.cssText = isOpen
+        ? ''
+        : 'display:flex;flex-direction:column;position:absolute;top:70px;left:0;right:0;background:var(--warm-white);padding:1.5rem 2rem;gap:1rem;border-bottom:1px solid var(--sand);z-index:99';
       if (cta) cta.style.display = isOpen ? '' : 'block';
     }
 
-    /* ── Formulario: enviar por WhatsApp ───────────────────────
-       Reemplazá TUNUMERO por el número real de WhatsApp (ej: 5493764XXXXXXX)
-    ───────────────────────────────────────────────────────── */
+    /* ── Formulario → WhatsApp ─────────────────────────────── */
     function enviarFormulario() {
       const nombre   = document.getElementById('nombre').value.trim();
       const telefono = document.getElementById('telefono').value.trim();
@@ -1424,12 +989,14 @@
 
       if (!nombre) { alert('Por favor ingresá tu nombre.'); return; }
 
-      const texto = `Hola! Consulta desde la web 🏠\n\n` +
+      const texto =
+        `Hola! Consulta desde la web 🏠\n\n` +
         `*Nombre:* ${nombre}\n` +
         (telefono ? `*Teléfono:* ${telefono}\n` : '') +
         (email    ? `*Email:* ${email}\n`        : '') +
         (interes  ? `*Interés:* ${interes}\n`    : '') +
         (mensaje  ? `*Mensaje:* ${mensaje}`       : '');
+
       const numero = '5493764883868';
       window.open(`https://wa.me/${numero}?text=${encodeURIComponent(texto)}`, '_blank');
     }
